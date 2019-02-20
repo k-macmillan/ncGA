@@ -26,10 +26,11 @@ class GA():
         print('Running...')
         while self.generation != self.max_gens:
             self.Evaluate()     # 1
+            if self.generation % 50 == 0:
+                self.Draw()
+
             self.Breed()        # 2
             self.Mutate()       # 3
-            if self.generation % 50 == 0:
-                self.Draw()     # 4
             self.generation += 1
         self.Evaluate()
         self.Draw()
@@ -75,7 +76,7 @@ class GA():
         pass
 
 
-# 4
+
     def Draw(self):
         """Draw the output to the screen"""
         print('Drawing generation: ', self.generation)
