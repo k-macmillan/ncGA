@@ -1,0 +1,19 @@
+TODO:
+Make numpy array for a genome
+
+Generate random size circles at random points
+Set circle intensity randomly
+Set circle alpha randomly
+Draw image
+
+Fitness evaluation
+Determine selection (elitism, (u + lambda or u*lambda), etc.)
+
+Crossover two genomes
+Mutate genome
+
+Sort pool based on fitness
+
+
+DONE:
+Framework GA class
