@@ -1,25 +1,42 @@
-
+import numpy as np
 
 
 class GA():
-    def __init__(self, pool=100, generations=1000):
+    def __init__(self, pool=100, generations=1000, circles=50):
         self.pool_size = pool
         self.pool = [0] * self.pool_size
         self.max_gens = generations
         self.generation = 0
+        self.circles = circles
+        self.genome = np.dtype([('center', f7),('radius', f7), ('intensity', np.int8), ('alpha', np.int8) ])
         self.InitializePool()
         self.Run()
 
     def InitializePool(self):
         """Initialize pool"""
         print('Initalizing...')
+        self.MakeIndividual()
+        exit()
         pool = 0
         while pool != self.pool_size:
-            self.MakeIndividual()
+            self.MakeIndividual(pool)
             pool += 1
 
-    def MakeIndividual(self):
-        pass
+    def MakeIndividual(self, i):
+        individual = np.zeros((self.circles,), dtype=self.genome)
+        print(individual)
+        exit()
+        for _ in range(self.circles):
+            self.FillGenomes()
+
+    def FillGenomes(self):
+        """Generates a genome"""
+        # These would be random...
+        center = (0.0, 1.0)
+        radius = 10.0
+        intensity = 0
+        alpha = 100
+        return np.array([center, radius, intensity, alpha])
 
     def Run(self):
         """Run the Genetic Algorithm"""
