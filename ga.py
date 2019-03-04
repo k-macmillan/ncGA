@@ -49,7 +49,7 @@ class GA():
 
     def DefineMaxCircleRadius(self):
         """Circle radius is dependent on desired affected pixels"""
-        self.max_radius = (self.pixel_diff / self.perfect_image ) * self.max_dim 
+        self.max_radius = (self.pixel_diff / self.perfect_image ) * self.max_dim
 
 # 1
     def InitializePop(self):
