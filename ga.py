@@ -27,6 +27,7 @@ class GA():
                 self.EvaluatePop()
                 self.Breed()        # 2
                 self.Mutate()       # 3
+            self.EvaluatePop()            
             self.UpdateImage()
             self.epoch += 1
         self.EvaluatePop()
