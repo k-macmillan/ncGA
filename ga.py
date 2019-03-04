@@ -8,24 +8,20 @@ class GA():
         self.max_gens = generations
         self.generation = 0
         self.circles = circles
-        self.genome = np.dtype([('center', f7),('radius', f7), ('intensity', np.int8), ('alpha', np.int8) ])
+        # self.genome = np.dtype([('center', f7),('radius', f7), ('intensity', np.int8), ('alpha', np.int8) ])
         self.InitializePool()
         self.Run()
 
     def InitializePool(self):
         """Initialize pool"""
         print('Initalizing...')
-        self.MakeIndividual()
-        exit()
         pool = 0
         while pool != self.pool_size:
             self.MakeIndividual(pool)
             pool += 1
 
     def MakeIndividual(self, i):
-        individual = np.zeros((self.circles,), dtype=self.genome)
-        print(individual)
-        exit()
+        # individual = np.zeros((self.circles,), dtype=self.genome)
         for _ in range(self.circles):
             self.FillGenomes()
 
