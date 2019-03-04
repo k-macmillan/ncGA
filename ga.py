@@ -7,7 +7,13 @@ class GA():
         self.pop = [0] * self.pop_size
         self.gens = generations
         self.circles = circles
-        # self.genome = np.dtype([('center', 'f7'),('radius', 'f7'), ('intensity', np.int8), ('alpha', np.int8) ])
+        self.center = np.dtype([('x', np.uint16), ('y', np.uint16)])
+        self.genome = np.dtype([('center', self.center), ('radius', np.float64), ('intensity', np.uint8) ])
+        # Examples:
+        # c = np.array((9, 3), dtype=self.center)
+        # g = np.array((c, 2.3, 200), dtype=self.genome)
+        # print(g['radius'])
+        # print(g['center']['x'])
 
     def Reset(self):
         self.generation = 0
