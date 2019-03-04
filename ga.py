@@ -7,7 +7,7 @@ class GA():
         self.pop = [0] * self.pop_size
         self.gens = generations
         self.circles = circles
-        # self.genome = np.dtype([('center', f7),('radius', f7), ('intensity', np.int8), ('alpha', np.int8) ])
+        # self.genome = np.dtype([('center', 'f7'),('radius', 'f7'), ('intensity', np.int8), ('alpha', np.int8) ])
 
     def Reset(self):
         self.generation = 0
@@ -36,6 +36,8 @@ class GA():
 
     def LoadImage(self, image):
         """Will load an image file into the format we need"""
+        self.width = 120 # STUB
+        self.height = 50 # STUB
         self.max_dim = 120 # STUB, assume image is 50x120
         pixels = 6000   # STUB, would be num_pixels in image
         self.perfect_image = 255 * pixels
@@ -50,6 +52,7 @@ class GA():
     def DefineMaxCircleRadius(self):
         """Circle radius is dependent on desired affected pixels"""
         self.max_radius = (self.pixel_diff / self.perfect_image ) * self.max_dim
+        # print(self.max_radius)
 
 # 1
     def InitializePop(self):
@@ -61,11 +64,11 @@ class GA():
     def FillGenomes(self):
         """Generates a genome"""
         # These would be random...
-        center = (0.0, 1.0)
-        radius = 10.0
-        intensity = 0
-        alpha = 100
-        return np.array([center, radius, intensity, alpha])
+        center = (np.random.random_integers(self.width) - 1,
+                  np.random.random_integers(self.height) - 1)
+        radius = np.random.random_sample() * self.max_radius
+        intensity = np.random.random_integers(256) - 1
+        return np.array([center, radius, intensity])
 
     def EvaluatePop(self):
         """Evaluates each individual and sorts them"""
