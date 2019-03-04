@@ -13,6 +13,39 @@ class GA():
         self.generation = 0
         self.img_fitness = 0
 
+    def Run(self, image):
+        """Run the Genetic Algorithm"""
+        self.LoadImage(image)
+        self.Reset()
+        print('Running...')
+        self.epoch = 0
+        while self.epoch != self.circles:
+            self.Draw()
+            self.img_fitness = self.EvaluateImage()
+            self.InitializePop()    # 1
+            for _ in range(self.gens):
+                self.EvaluatePop()
+                self.Breed()        # 2
+                self.Mutate()       # 3
+            self.UpdateImage()
+            self.epoch += 1
+        self.EvaluatePop()
+        self.UpdateImage()
+        self.Draw()
+
+    def LoadImage(self, image):
+        """Will load an image file into the format we need"""
+        pixels = 6000   # STUB, would be num_pixels in image
+        self.perfect_image = 255 * pixels
+        self.image = 0
+        self.art = 0
+
+    def EvaluateImage(self):
+        """Evaluates the current epoch image (self.art) against self.image"""
+        pixel_diff = np.random.random_integers(self.perfect_image) # STUB
+        return self.perfect_image - pixel_diff
+
+# 1
     def InitializePop(self):
         """Initialize pop"""
         for i in range(self.pop_size):
@@ -26,35 +59,6 @@ class GA():
         intensity = 0
         alpha = 100
         return np.array([center, radius, intensity, alpha])
-
-    def Run(self, image):
-        """Run the Genetic Algorithm"""
-        self.LoadImage(image)
-        self.Reset()
-        print('Running...')
-        self.epoch = 0
-        while self.epoch != self.circles:
-            self.Draw()
-            self.img_fitness = self.EvaluateImage()
-            self.InitializePop()
-            for _ in range(self.gens):
-                self.Breed()        # 2
-                self.Mutate()       # 3
-            self.UpdateImage()
-            self.epoch += 1
-        self.EvaluatePop()
-        self.UpdateImage()
-        self.Draw()
-
-    def LoadImage(self, image):
-        """Will load an image file into the format we need"""
-        self.image = 0
-        self.art = 0
-
-# 1
-    def EvaluateImage(self):
-        """Evaluates the current epoch image against self.image"""
-        return 0
 
     def EvaluatePop(self):
         """Evaluates each individual and sorts them"""
