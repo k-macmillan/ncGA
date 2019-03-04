@@ -36,6 +36,7 @@ class GA():
 
     def LoadImage(self, image):
         """Will load an image file into the format we need"""
+        self.max_dim = 120 # STUB, assume image is 50x120
         pixels = 6000   # STUB, would be num_pixels in image
         self.perfect_image = 255 * pixels
         self.image = 0
@@ -43,12 +44,17 @@ class GA():
 
     def EvaluateImage(self):
         """Evaluates the current epoch image (self.art) against self.image"""
-        pixel_diff = np.random.random_integers(self.perfect_image) # STUB
-        return self.perfect_image - pixel_diff
+        self.pixel_diff = np.random.random_integers(self.perfect_image) # STUB
+        return self.perfect_image - self.pixel_diff
+
+    def DefineMaxCircleRadius(self):
+        """Circle radius is dependent on desired affected pixels"""
+        self.max_radius = self.pixel_diff * self.max_dim / self.perfect_image
 
 # 1
     def InitializePop(self):
         """Initialize pop"""
+        self.DefineMaxCircleRadius()
         for i in range(self.pop_size):
             self.pop[i] = self.FillGenomes()
 
