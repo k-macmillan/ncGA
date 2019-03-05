@@ -1,4 +1,6 @@
 import numpy as np
+import imageio
+import matplotlib.pyplot as plt
 
 
 class GA():
@@ -42,12 +44,17 @@ class GA():
 
     def LoadImage(self, image):
         """Will load an image file into the format we need"""
-        self.width = 120 # STUB
-        self.height = 50 # STUB
-        self.max_dim = 120 # STUB, assume image is 50x120
+        self.image = imageio.imread(image)
+        # Account for images with 3 dimensions
+        if len(self.image.shape) == 3:
+            self.height, self.width, _ = self.image.shape
+            # Apply grayscale...
+        else:
+            self.height, self.width = self.image.shape
+        self.max_dim = max(self.height, self.width)
         self.perfect_image = 255 * self.width * self.height
-        self.image = 0 # STUB
-        self.art = 0 # STUB
+        self.art = np.zeros((self.height, self.width))
+        # exit()
 
     def EvaluateImage(self):
         """Evaluates the current epoch image (self.art) against self.image"""
@@ -124,9 +131,17 @@ class GA():
     def Draw(self):
         """Draw the output to the screen"""
         print('Drawing epoch: ', self.epoch)
+        plt.clf()
+        plt.imshow(self.art, cmap='gray', vmin = 0, vmax = 255)
+        # plt.imshow(self.image, cmap='gray', vmin = 0, vmax = 255)
+        plt.axis('off')
+        plt.ion()
+        plt.show()
+        plt.pause(.001)
 
 
 
 if __name__ == '__main__':
     ga = GA()
-    ga.Run("imagepath")
+    ga.Run('images/test0.png')
+    plt.ioff()
