@@ -9,13 +9,14 @@ class GA():
         self.pop = [0] * self.pop_size
         self.gens = generations
         self.circles = circles
-        self.center = np.dtype([('x', np.uint16), ('y', np.uint16)])
-        self.genome = np.dtype([('center', self.center), ('radius', np.float64), ('intensity', np.uint8) ])
+        self.center = np.dtype([('x', np.uint16, (1,)), ('y', np.uint16, (1,))])
+        self.genome = np.dtype([('center', self.center), ('radius', np.float64, (1,)), ('intensity', np.uint8, (1,)) ])
         # Examples:
         # c = np.array((9, 3), dtype=self.center)
         # g = np.array((c, 2.3, 200), dtype=self.genome)
-        # print(g['radius'])
-        # print(g['center']['x'])
+        # print('radius of type: ', type(g['radius'][0]))
+        # print('x type: ', type(g['center']['x']))
+        # exit()
 
     def Reset(self):
         self.generation = 0
@@ -131,12 +132,15 @@ class GA():
     def Draw(self):
         """Draw the output to the screen"""
         print('Drawing epoch: ', self.epoch)
-        plt.clf()
-        plt.imshow(self.art, cmap='gray', vmin = 0, vmax = 255)
-        # plt.imshow(self.image, cmap='gray', vmin = 0, vmax = 255)
-        plt.axis('off')
-        plt.ion()
+        if self.epoch == 0:
+            plt.clf()
+            fig, self.ax = plt.subplots(1, 2)
+            plt.close(fig=1)
+            plt.ion()
         plt.show()
+        self.ax[0].imshow(self.art, cmap='gray', vmin = 0, vmax = 255)
+        self.ax[1].imshow(self.image, cmap='gray', vmin = 0, vmax = 255)
+        plt.axis('off')
         plt.pause(.001)
 
 
