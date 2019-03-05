@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 class GA():
-    def __init__(self, population=100, generations=1000, circles=50):
+    def __init__(self, population=100, generations=100, circles=50):
         self.pop_size = population
         self.pop = [0] * self.pop_size
         self.gens = generations
@@ -31,6 +31,7 @@ class GA():
         while self.epoch != self.circles:
             self.Draw()
             self.img_fitness = self.EvaluateImage()
+            # print(self.img_fitness)
             self.InitializePop()    # 1
             for _ in range(self.gens):
                 self.EvaluatePop()
@@ -53,18 +54,20 @@ class GA():
         else:
             self.height, self.width = self.image.shape
         self.max_dim = max(self.height, self.width)
-        self.perfect_image = 255 * self.width * self.height
+        self.perfect_image = np.sum(self.image)
+        self.max_image = 255 * self.width * self.height
         self.art = np.zeros((self.height, self.width))
-        # exit()
 
     def EvaluateImage(self):
         """Evaluates the current epoch image (self.art) against self.image"""
-        self.pixel_diff = np.random.random_integers(self.perfect_image) # STUB
-        return self.perfect_image - self.pixel_diff
+        self.pixel_diff = self.perfect_image - np.sum(self.art)
+        return self.max_image - self.pixel_diff
 
     def DefineMaxCircleRadius(self):
         """Circle radius is dependent on desired affected pixels"""
-        self.max_radius = (self.pixel_diff / self.perfect_image ) * self.max_dim
+        self.max_radius = (self.pixel_diff / self.max_image ) * self.max_dim
+        # print(self.max_radius)
+        # exit()
 
 # 1
     def InitializePop(self):
@@ -81,18 +84,47 @@ class GA():
                            dtype=self.center)
         radius = np.random.random_sample() * self.max_radius
         intensity = np.random.random_integers(256) - 1
+        # Test:
+        # center = np.array((75, 75), dtype=self.center)
+        # radius = 30.0
         return np.array((center, radius, intensity), dtype=self.genome)
 
     def EvaluatePop(self):
         """Evaluates each individual and sorts them"""
+        # print('Entering Fitness loop')
+        self.fitness = np.zeros(self.pop_size)
         for i in range(self.pop_size):
-            self.Fitness(self.pop[i])
+            self.fitness[i] = self.Fitness(self.pop[i])
+        # print('Exiting Fitness loop')
         self.SortPopulation()
 
     def Fitness(self, individual):
         """Scores fitness for an individual"""
         # Note: individual is a numpy array of dtype=self.genome
-        pass
+        return
+        # https://stackoverflow.com/a/44874588/5492446
+
+        # if center is None: # use the middle of the image
+        center = individual['center']
+
+        Y, X = np.ogrid[:self.height, :self.width]
+        dist_from_center = np.sqrt((X - center['x'])**2 + (Y-center['y'])**2)
+
+        mask = dist_from_center <= individual['radius']
+        image_mask = np.sum(mask * self.image)
+        print(image_mask)
+        circle_value = np.sum(mask) * individual['intensity']
+        print('circle_value: ', circle_value)
+        # plt.ioff()
+        plt.clf()
+        fig, self.ax = plt.subplots(1, 2)
+        plt.close(fig=1)
+        self.ax[0].imshow(self.image, cmap='gray', vmin = 0, vmax = 255)
+        self.ax[1].imshow(mask * individual['intensity'], cmap='gray', vmin=0, vmax=255)
+        plt.show()
+        print('diff: ', np.sum(image_mask) - circle_value)
+        exit()
+        # return self.
 
     def SortPopulation(self):
         pass
@@ -148,5 +180,5 @@ class GA():
 
 if __name__ == '__main__':
     ga = GA()
-    ga.Run('images/test0.png')
+    ga.Run('images/test.png')
     plt.ioff()
