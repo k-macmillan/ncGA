@@ -29,7 +29,6 @@ class GA():
         print('Running...')
         self.epoch = 0
         while self.epoch != self.circles:
-            self.Draw()
             self.img_fitness = self.EvaluateImage()
             # print(self.img_fitness)
             self.InitializePop()    # 1
@@ -39,6 +38,7 @@ class GA():
                 self.Mutate()       # 3
             self.EvaluatePop()            
             self.UpdateImage()
+            self.Draw()
             self.epoch += 1
         self.EvaluatePop()
         self.UpdateImage()
@@ -61,12 +61,16 @@ class GA():
     def EvaluateImage(self):
         """Evaluates the current epoch image (self.art) against self.image"""
         self.pixel_diff = self.perfect_image - np.sum(self.art)
-        return self.max_image - self.pixel_diff
+        return self.max_image - np.abs(self.pixel_diff)
 
     def DefineMaxCircleRadius(self):
         """Circle radius is dependent on desired affected pixels"""
-        self.max_radius = (self.pixel_diff / self.max_image ) * self.max_dim
-        # print(self.max_radius)
+        art_val = np.sum(self.art)
+        if art_val == 0:
+            self.max_radius = self.max_dim
+        else:
+            self.max_radius = (self.img_fitness / self.max_image ) * self.max_dim
+        print('max rad: ', self.max_radius)
         # exit()
 
 # 1
@@ -78,30 +82,30 @@ class GA():
 
     def FillGenomes(self):
         """Generates a genome"""
-        # These would be random...
         center = np.array((np.random.random_integers(self.width) - 1,
                            np.random.random_integers(self.height) - 1),
                            dtype=self.center)
-        radius = np.random.random_sample() * self.max_radius
+        # radius = np.random.random_sample() * self.max_radius
+        # print(self.max_radius)
+        # exit()
+        # radius = self.max_radius
+        # print(self.max_radius / 12.0)
+        # exit()
+        radius = np.random.uniform(low=max(1.0, self.max_radius / 12.0), high=self.max_radius / 2.0)
         intensity = np.random.random_integers(256) - 1
-        # Test:
-        # center = np.array((75, 75), dtype=self.center)
-        # radius = 30.0
         return np.array((center, radius, intensity), dtype=self.genome)
 
     def EvaluatePop(self):
         """Evaluates each individual and sorts them"""
-        # print('Entering Fitness loop')
         self.fitness = np.zeros(self.pop_size)
         for i in range(self.pop_size):
             self.fitness[i] = self.Fitness(self.pop[i])
-        # print('Exiting Fitness loop')
         self.SortPopulation()
 
     def Fitness(self, individual):
         """Scores fitness for an individual"""
         # Note: individual is a numpy array of dtype=self.genome
-        return
+
         # https://stackoverflow.com/a/44874588/5492446
 
         # if center is None: # use the middle of the image
@@ -112,22 +116,13 @@ class GA():
 
         mask = dist_from_center <= individual['radius']
         image_mask = np.sum(mask * self.image)
-        print(image_mask)
+        # print(image_mask)
         circle_value = np.sum(mask) * individual['intensity']
-        print('circle_value: ', circle_value)
-        # plt.ioff()
-        plt.clf()
-        fig, self.ax = plt.subplots(1, 2)
-        plt.close(fig=1)
-        self.ax[0].imshow(self.image, cmap='gray', vmin = 0, vmax = 255)
-        self.ax[1].imshow(mask * individual['intensity'], cmap='gray', vmin=0, vmax=255)
-        plt.show()
-        print('diff: ', np.sum(image_mask) - circle_value)
-        exit()
-        # return self.
+        return image_mask - circle_value
 
     def SortPopulation(self):
-        pass
+        """Maps self.fitness to a sorted index list"""
+        self.sorted_fitness = np.argsort(-self.fitness)
 
 
 # 2
@@ -135,6 +130,7 @@ class GA():
         """Selection and Crossover to generate a new population"""
         # Breeding will likely increase number of generations needed but will 
         # yield a better solution.
+
         new_pop_size = 0
         while new_pop_size != self.pop_size:
             a, b = self.Selection()
@@ -159,7 +155,15 @@ class GA():
 # 4 
     def UpdateImage(self):
         """Update self.art with the most fit individual"""
-        pass
+        individual = self.pop[self.sorted_fitness[0]]
+        center = individual['center']
+
+        Y, X = np.ogrid[:self.height, :self.width]
+        dist_from_center = np.sqrt((X - center['x'])**2 + (Y-center['y'])**2)
+
+        mask = dist_from_center <= individual['radius']
+        circle_value = mask * individual['intensity']
+        self.art = self.art + circle_value
 
     def Draw(self):
         """Draw the output to the screen"""
@@ -171,6 +175,7 @@ class GA():
             self.ax[0].axis('off')
             self.ax[1].axis('off')
             plt.ion()
+
         plt.show()
         self.ax[0].imshow(self.art, cmap='gray', vmin = 0, vmax = 255)
         self.ax[1].imshow(self.image, cmap='gray', vmin = 0, vmax = 255)
