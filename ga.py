@@ -9,13 +9,13 @@ class GA():
         self.pop = [0] * self.pop_size
         self.gens = generations
         self.circles = circles
-        self.center = np.dtype([('x', np.uint16, (1,)), ('y', np.uint16, (1,))])
-        self.genome = np.dtype([('center', self.center), ('radius', np.float64, (1,)), ('intensity', np.uint8, (1,)) ])
+        self.center = np.dtype([('x', np.uint16), ('y', np.uint16)])
+        self.genome = np.dtype([('center', self.center), ('radius', np.float64), ('intensity', np.uint8) ])
         # Examples:
         # c = np.array((9, 3), dtype=self.center)
         # g = np.array((c, 2.3, 200), dtype=self.genome)
-        # print('radius of type: ', type(g['radius'][0]))
-        # print('x type: ', type(g['center']['x']))
+        # print('radius: ', g['radius'])
+        # print('x:      ', g['center']['x'])
         # exit()
 
     def Reset(self):
@@ -136,11 +136,12 @@ class GA():
             plt.clf()
             fig, self.ax = plt.subplots(1, 2)
             plt.close(fig=1)
+            self.ax[0].axis('off')
+            self.ax[1].axis('off')
             plt.ion()
         plt.show()
         self.ax[0].imshow(self.art, cmap='gray', vmin = 0, vmax = 255)
         self.ax[1].imshow(self.image, cmap='gray', vmin = 0, vmax = 255)
-        plt.axis('off')
         plt.pause(.001)
 
 
