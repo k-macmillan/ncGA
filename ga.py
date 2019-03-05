@@ -45,10 +45,9 @@ class GA():
         self.width = 120 # STUB
         self.height = 50 # STUB
         self.max_dim = 120 # STUB, assume image is 50x120
-        pixels = 6000   # STUB, would be num_pixels in image
-        self.perfect_image = 255 * pixels
-        self.image = 0
-        self.art = 0
+        self.perfect_image = 255 * self.width * self.height
+        self.image = 0 # STUB
+        self.art = 0 # STUB
 
     def EvaluateImage(self):
         """Evaluates the current epoch image (self.art) against self.image"""
@@ -58,7 +57,6 @@ class GA():
     def DefineMaxCircleRadius(self):
         """Circle radius is dependent on desired affected pixels"""
         self.max_radius = (self.pixel_diff / self.perfect_image ) * self.max_dim
-        # print(self.max_radius)
 
 # 1
     def InitializePop(self):
@@ -70,11 +68,12 @@ class GA():
     def FillGenomes(self):
         """Generates a genome"""
         # These would be random...
-        center = (np.random.random_integers(self.width) - 1,
-                  np.random.random_integers(self.height) - 1)
+        center = np.array((np.random.random_integers(self.width) - 1,
+                           np.random.random_integers(self.height) - 1),
+                           dtype=self.center)
         radius = np.random.random_sample() * self.max_radius
         intensity = np.random.random_integers(256) - 1
-        return np.array([center, radius, intensity])
+        return np.array((center, radius, intensity), dtype=self.genome)
 
     def EvaluatePop(self):
         """Evaluates each individual and sorts them"""
@@ -84,6 +83,7 @@ class GA():
 
     def Fitness(self, individual):
         """Scores fitness for an individual"""
+        # Note: individual is a numpy array of dtype=self.genome
         pass
 
     def SortPopulation(self):
