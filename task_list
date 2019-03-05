@@ -13,6 +13,8 @@ Crossover two genomes
 Mutate genome
 
 Sort pool based on fitness
+Possible multithreading:
+https://stackoverflow.com/a/28463266/5492446
 
 
 DONE:
