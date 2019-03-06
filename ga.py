@@ -30,11 +30,13 @@ class GA():
                 self.EvaluatePop()
                 # print(self.pop)
                 self.Breed()        # 2
-                # print()
-                # print(self.pop)
-                # exit()
-                self.Mutate()       # 3
-            self.EvaluatePop()            
+            self.EvaluatePop() 
+            # print(self.pop)
+            # print()
+            # print(self.fitness)
+            # print()
+            # print(self.sorted_fitness)
+            # exit()
             self.UpdateImage()
             self.Draw()
             self.epoch += 1
@@ -132,16 +134,26 @@ class GA():
         while royal_kids < royalty:
             a, b = self.CinderellaSelection(royalty)
             c1, c2 = self.Crossover(a, b)
-            royal_kids += 2
+            new_pop[royal_kids + royalty] = c1
+            royal_kids += 1
+            if royal_kids < royalty:
+                # Drop mutation if we're full
+                new_pop[royal_kids + royalty] = c2
+                royal_kids += 1
 
         # Fill the remainder of the population with random selection
         new_pop_size = royalty + royal_kids
-        while new_pop_size != self.pop_size:
+        while new_pop_size < self.pop_size:
             a, b = self.Selection()
             c1, c2 = self.Crossover(a, b)
-            new_pop_size += 2
-
-        self.pop = new_pop
+            new_pop[new_pop_size] = c1
+            new_pop_size += 1
+            if new_pop_size < self.pop_size:
+                # Drop mutation if we're full
+                new_pop[new_pop_size] = c2
+                new_pop_size += 1
+        
+        self.pop = np.copy(new_pop)
 
     def CinderellaSelection(self, royalty):
         """Select royalty and match with a peasant"""
@@ -160,25 +172,57 @@ class GA():
     def Crossover(self, a, b):
         """Performs crossover on two selected individuals and returns the 
            children to be added to new_pop"""
-        return None, None
-        c_a = a['center']['x'], a['center']['y']
-        c_b = b['center']
-        print(c_a)
-        # print(c_b)
-        # print(c_a + c_b)
-        exit()
-        center = np.array((a['center'] + b['center']), dtype=self.center)
-        print(center)
-        exit()
-        c1 = (a + b) / 2
-        print(c1)
-        exit()
+        # return None, None
+        avg = self.AverageGeneome(a, b)
+        mutant = self.MutateGeneome(avg)
+        return avg, mutant
 
+    def AverageGeneome(self, a, b):
+        """Averages two genomes"""
+        x = (a['center']['x'] + b['center']['x']) // 2
+        y = (a['center']['y'] + b['center']['y']) // 2
+
+        center = np.array((x, y), dtype=self.center)
+        radius = (a['radius'] + b['radius']) / 2.0
+        intensity = 0
+        intensity += a['intensity']
+        intensity += b['intensity']
+
+        intensity = intensity // 2
+        return np.array((center, radius, intensity), dtype=self.genome)
 
 # 3
-    def Mutate(self):
-        """Mutatation applied to pop"""
-        pass
+    def MutateGeneome(self, individual):
+        """Mutatation applied to a genome"""
+        # NOTE: Test out normal and uniform. Uniform is robus, normal is for 
+        #       fine-tuning. Possibly allow generation to determine.
+        uniform = False
+        if uniform:
+            x = individual['center']['x']
+            x = max(min((np.random.uniform(low=-1.0, high=1.0) * x + x), self.width), 0)
+            y = individual['center']['y']
+            y = max(min((np.random.uniform(low=-1.0, high=1.0) * y + y), self.height), 0)
+            
+            center = np.array((x, y), dtype=self.center)
+            rand = np.random.uniform(low=-1.0, high=1.0)
+            radius = max(rand * individual['radius'] + individual['radius'], 1.0)
+            rand = np.random.uniform(low=-1.0, high=1.0)
+            intensity = max(rand * individual['intensity'] + individual['intensity'], 1.0)
+            
+            return np.array((center, radius, intensity), dtype=self.genome)
+        else:
+            # Normal distribution
+            rand = np.random.normal(0.0, 0.1, 4)
+            x = individual['center']['x']
+            x = max(min((rand[0] * x + x), self.width), 0)
+            y = individual['center']['y']
+            y = max(min((rand[1] * y + y), self.height), 0)
+            
+            center = np.array((x, y), dtype=self.center)
+            radius = max(rand[2] * individual['radius'] + individual['radius'], 1.0)
+            intensity = max(rand[3] * individual['intensity'] + individual['intensity'], 1.0)
+            
+            return np.array((center, radius, intensity), dtype=self.genome)
 
 
 # 4 
@@ -216,3 +260,4 @@ if __name__ == '__main__':
     ga = GA()
     ga.Run('images/test.png')
     plt.ioff()
+
