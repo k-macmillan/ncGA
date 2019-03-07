@@ -5,16 +5,13 @@ from time import sleep
 
 class GA():
     ELITISM = 0.10
-    def __init__(self, population=100, generations=100, circles=50):
+    def __init__(self, population=100, generations=50, circles=50):
         self.pop_size = population
         self.gens = generations
         self.circles = circles
         self.center = np.dtype([('x', np.uint16), ('y', np.uint16)])
         self.genome = np.dtype([('center',self.center), ('radius', np.float64), ('intensity', np.uint8) ])
         self.pop = np.zeros((self.pop_size, ), dtype=self.genome)
-        # rand = np.random.normal(0.0, 0.1, 100)
-        # print(rand)
-        # exit()
 
     def Reset(self):
         self.img_fitness = 0
@@ -29,10 +26,11 @@ class GA():
             self.img_fitness = self.EvaluateImage()
             # print(self.img_fitness)
             self.InitializePop()    # 1
-            for _ in range(self.gens):
+            for i in range(self.gens):
                 self.EvaluatePop()
-                # print(self.pop)
+                # print('Best: ', self.pop[self.sorted_fitness[0]])
                 self.Breed()        # 2
+                # print('Generation: ', i)
             self.EvaluatePop() 
             self.UpdateImage()
             self.Draw()
@@ -41,15 +39,16 @@ class GA():
             # print(self.fitness)
             # print()
             # print(self.sorted_fitness)
-            # sleep(5)
             # exit()
             self.epoch += 1
         self.EvaluatePop()
         self.UpdateImage()
         self.Draw()
+        sleep(900)
 
     def LoadImage(self, image):
         """Will load an image file into the format we need"""
+        # self.image = np.invert(imageio.imread(image))
         self.image = imageio.imread(image)
         # Account for images with 3 dimensions
         if len(self.image.shape) == 3:
@@ -96,7 +95,7 @@ class GA():
         """Evaluates each individual and sorts them"""
         self.fitness = np.zeros(self.pop_size)
         for i in range(self.pop_size):
-            self.fitness[i] = self.Fitness(self.pop[i])
+            self.fitness[i] = self.Fitness2(self.pop[i])
         self.SortPopulation()
 
     def Fitness(self, individual):
@@ -120,6 +119,39 @@ class GA():
         max_val = np.sum(mask) * 255
         fitness = max_val - (image_val - circle_val)
         return fitness
+
+    def Fitness2(self, individual):
+        """Scores fitness for an individual"""
+        # Note: individual is a numpy array of dtype=self.genome
+
+        # https://stackoverflow.com/a/44874588/5492446
+
+        center = individual['center']
+
+        Y, X = np.ogrid[:self.height, :self.width]
+        dist_from_center = np.sqrt((X - center['x'])**2 + (Y-center['y'])**2)
+
+        mask = dist_from_center <= individual['radius']
+        circle_mask = mask * individual['intensity']
+
+        # Where the magic begins
+        result = np.where(mask)
+
+        no_change = 0
+        improvement = 0
+        for k in range(len(result[0])):
+            i, j = result[0][k], result[1][k]
+            # print('i, j: {}, {}'.format(i, j))
+            # No change
+            # print(self.image[i, j])
+            # exit()
+            if self.art[i, j] == circle_mask[i, j]:
+                no_change += 255
+            # print(self.image[i, j])
+            cm = np.int8(circle_mask[i, j])
+            improvement += 255 - np.abs(self.image[i, j] - cm)
+
+        return improvement - no_change
 
     def SortPopulation(self):
         """Maps self.fitness to a sorted index list"""
@@ -237,6 +269,7 @@ class GA():
     def UpdateImage(self):
         """Update self.art with the most fit individual"""
         individual = self.pop[self.sorted_fitness[0]]
+        print(individual)
         center = individual['center']
 
         Y, X = np.ogrid[:self.height, :self.width]
@@ -248,7 +281,7 @@ class GA():
 
     def Draw(self):
         """Draw the output to the screen"""
-        print('Drawing epoch: ', self.epoch)
+        print('Drawing circle: ', self.epoch)
         if self.epoch == 0:
             plt.clf()
             fig, self.ax = plt.subplots(1, 2)
@@ -256,10 +289,12 @@ class GA():
             self.ax[0].axis('off')
             self.ax[1].axis('off')
             plt.ion()
-
+        title = 'Circle: ' + str(self.epoch)
         plt.show()
         self.ax[0].imshow(self.art, cmap='gray', vmin = 0, vmax = 255)
         self.ax[1].imshow(self.image, cmap='gray', vmin = 0, vmax = 255)
+        self.ax[0].set_title(title)
+        self.ax[1].set_title('Original Image')
         plt.pause(.001)
 
 
