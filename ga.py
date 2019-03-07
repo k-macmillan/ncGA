@@ -1,7 +1,7 @@
 import numpy as np
 import imageio
 import matplotlib.pyplot as plt
-
+from time import sleep
 
 class GA():
     ELITISM = 0.10
@@ -34,14 +34,15 @@ class GA():
                 # print(self.pop)
                 self.Breed()        # 2
             self.EvaluatePop() 
+            self.UpdateImage()
+            self.Draw()
             # print(self.pop)
             # print()
             # print(self.fitness)
             # print()
             # print(self.sorted_fitness)
+            # sleep(5)
             # exit()
-            self.UpdateImage()
-            self.Draw()
             self.epoch += 1
         self.EvaluatePop()
         self.UpdateImage()
