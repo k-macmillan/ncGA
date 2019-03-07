@@ -12,6 +12,9 @@ class GA():
         self.center = np.dtype([('x', np.uint16), ('y', np.uint16)])
         self.genome = np.dtype([('center',self.center), ('radius', np.float64), ('intensity', np.uint8) ])
         self.pop = np.zeros((self.pop_size, ), dtype=self.genome)
+        # rand = np.random.normal(0.0, 0.1, 100)
+        # print(rand)
+        # exit()
 
     def Reset(self):
         self.img_fitness = 0
@@ -101,21 +104,25 @@ class GA():
 
         # https://stackoverflow.com/a/44874588/5492446
 
-        # if center is None: # use the middle of the image
         center = individual['center']
 
         Y, X = np.ogrid[:self.height, :self.width]
         dist_from_center = np.sqrt((X - center['x'])**2 + (Y-center['y'])**2)
 
         mask = dist_from_center <= individual['radius']
-        image_mask = np.sum(mask * self.image)
-        # print(image_mask)
-        circle_value = np.sum(mask) * individual['intensity']
-        return image_mask - circle_value
+
+        image_mask = mask * self.image
+        circle_mask = mask * individual['intensity']
+
+        image_val = np.sum(image_mask, dtype=np.int64)
+        circle_val = np.sum(np.abs(image_mask - circle_mask), dtype=np.int64)
+        max_val = np.sum(mask) * 255
+        fitness = max_val - (image_val - circle_val)
+        return fitness
 
     def SortPopulation(self):
         """Maps self.fitness to a sorted index list"""
-        self.sorted_fitness = np.argsort(-self.fitness)
+        self.sorted_fitness = np.argsort(self.fitness)
 
 
 # 2
