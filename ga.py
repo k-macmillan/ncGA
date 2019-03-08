@@ -1,11 +1,14 @@
 import numpy as np
+import math
 import imageio
 import matplotlib.pyplot as plt
 from time import sleep
+import cProfile
+import re
 
 class GA():
     ELITISM = 0.10
-    def __init__(self, population=100, generations=50, circles=50):
+    def __init__(self, population=50, generations=50, circles=50):
         self.pop_size = population
         self.gens = generations
         self.circles = circles
@@ -37,10 +40,10 @@ class GA():
                 else:
                     self.Breed2()        # 2
                 self.EvaluatePop()
-                self.Draw(self.UpdateImage(True))
+                #self.Draw(self.UpdateImage(True))
                 print('Generation: ', i)
             self.UpdateImage()
-            self.Draw()
+            #self.Draw()
             # print(self.pop)
             # print()
             # print(self.fitness)
@@ -140,27 +143,57 @@ class GA():
         # Note: individual is a numpy array of dtype=self.genome
 
         # https://stackoverflow.com/a/44874588/5492446
-        center = individual['center']
+        center_x = individual['center']['x']
+        center_y = individual['center']['y']
+        radius   = math.floor(individual['radius'])
+        #print(center_x)
+        #print(center_y)
+        #print(radius)
 
-        Y, X = np.ogrid[:self.height, :self.width]
-        dist_from_center = np.sqrt((X - center['x'])**2 + (Y-center['y'])**2)
+        #determine slice/submatrix boundaries
+        left_bound = (center_x - radius) if (center_x - radius) >= 0 else 0
+        right_bound = (center_x + radius) if (center_x + radius) <= self.width else self.width
+        top_bound = (center_y + radius) if (center_y + radius) <= self.height else self.height
+        bottom_bound = (center_y - radius) if (center_y - radius) >= 0 else 0
 
-        mask = dist_from_center <= individual['radius']
+        #print("Slice bounds: {} {} {} {}".format(left_bound, right_bound, top_bound, bottom_bound))
+        perfect_slice = self.art[bottom_bound:top_bound, left_bound:right_bound]
+
+        #circle = np.zeros((radius*2, radius*2))
+        #X, Y = np.ogrid[:radius*2, :radius*2] #gen circle mask 
+        #mask = (X - radius)**2 + (Y - radius)**2 <= radius**2 #identify all items inside circle
+        #circle[mask] = individual['intensity'] #set circle mask to individual's intensity
+        x, y = perfect_slice.shape
+        circle = np.full((x, y), individual['intensity'])
+        #print ("Perfect_slice: ")
+        #print(perfect_slice)
+        #print ("circle: ")
+        #print(circle)
+        fitness = (np.sum(circle - perfect_slice))
+        #print("Fitness: {}".format(fitness))
+        return fitness
+        #dist_from_center = np.sqrt((X - center['x'])**2 + (Y-center['y'])**2)
+
+        #mask = dist_from_center <= individual['radius']
 
         # Where the magic begins
-        result = np.where(mask)
+        #result = np.where(mask)
 
-        no_change = 0
-        improvement = 0
+        #no_change = 0
+        #improvement = 0
         # For each point in the mask
-        for k in range(len(result[0])):
-            i, j = result[0][k], result[1][k]
-            if self.art[i, j] == individual['intensity']:
-                no_change += 255
-            cm = np.int32(individual['intensity'])
-            improvement += 255 - np.abs(self.image[i, j] - cm)
+        #for k in range(len(result[0])):
+        #    i, j = result[0][k], result[1][k]
+        #    if self.art[i, j] == individual['intensity']:
+        #        no_change += 255
+        #    cm = np.int32(individual['intensity'])
+        #    improvement += 255 - np.abs(self.image[i, j] - cm)
 
-        return improvement - no_change
+        #return improvement - no_change
+
+    def Fitness3(self, individual):
+        return 0
+
 
     def SortPopulation(self):
         """Maps self.fitness to a sorted index list"""
@@ -395,6 +428,7 @@ class GA():
 
 if __name__ == '__main__':
     ga = GA()
-    ga.Run('images/test.png')
+    ga.Run("images/test.png")
+    #cProfile.run('ga.Run("images/test.png")', sort="time")
     plt.ioff()
 
