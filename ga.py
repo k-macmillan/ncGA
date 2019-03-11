@@ -2,7 +2,6 @@ import numpy as np
 import imageio
 import matplotlib.pyplot as plt
 from time import sleep
-# import cProfile
 
 class GA():
     ELITISM = 0.10
@@ -25,29 +24,23 @@ class GA():
         self.epoch = 0
         while self.epoch != self.circles:
             self.img_fitness = self.EvaluateImage()
-            # print(self.img_fitness)
             self.InitializePop()    # 1
             self.EvaluatePop()
             self.Draw()
-            for i in range(self.gens):
+            for self.gen in range(self.gens):
+                # print('Generation: ', self.gen)
                 # print('Best: ', self.pop[self.sorted_fitness[0]])
                 # print('Worst: ', self.fitness[self.sorted_fitness[self.pop_size - 1]])
                 # print('Fitness: ', self.fitness[self.sorted_fitness[0]])
-                if i < 10:
-                    self.Breed()
-                else:
-                    self.Breed2()        # 2
+                self.Breed()        # 2
                 self.EvaluatePop()
-                # self.Draw(self.UpdateImage(True))
-                # print('Generation: ', i)
             self.UpdateImage()
-            # self.Draw()
             # print(self.pop)
             # print()
             # print(self.fitness)
             # print()
             # print(self.sorted_fitness)
-            # sleep(10)
+            # sleep(7)
             # exit()
             self.epoch += 1
         self.EvaluatePop()
@@ -157,57 +150,28 @@ class GA():
 
         # Fill the remainder of the population with random selection
         new_pop_size = royalty + royal_kids
-        while new_pop_size < self.pop_size:
+        if self.gen < 10:
+            best_count = 0
+        else:
+            best_count = 6
+
+        while new_pop_size < self.pop_size - best_count:
             a, b = self.Selection()
             c1, c2 = self.Crossover(a, b)
             new_pop[new_pop_size] = c1
             new_pop_size += 1
-            if new_pop_size < self.pop_size:
-                # Drop mutation if we're full
-                new_pop[new_pop_size] = c2
-                new_pop_size += 1
-        
-        self.pop = np.copy(new_pop)
-
-    def Breed2(self):
-        """Selection and Crossover to generate a new population"""
-        new_pop = np.zeros((self.pop_size, ), dtype=self.genome)
-
-        # Take the most fit and keep them
-        royalty = int(self.pop_size * GA.ELITISM)
-        for i in range(royalty):
-            pop_idx = self.sorted_fitness[i]
-            new_pop[i] = np.copy(self.pop[pop_idx])
-
-        # Have the most fit breed with the rest of the population
-        royal_kids = 0
-        while royal_kids < royalty:
-            a, b = self.CinderellaSelection(royalty)
-            c1, c2 = self.Crossover(a, b)
-            new_pop[royal_kids + royalty] = c1
-            royal_kids += 1
-            if royal_kids < royalty:
-                # Drop mutation if we're full
-                new_pop[royal_kids + royalty] = c2
-                royal_kids += 1
-
-        # Fill the remainder of the population with random selection
-        new_pop_size = royalty + royal_kids
-        while new_pop_size < self.pop_size - 6:
-            a, b = self.Selection()
-            c1, c2 = self.Crossover(a, b)
-            new_pop[new_pop_size] = c1
-            new_pop_size += 1
-            if new_pop_size < self.pop_size - 6:
+            if new_pop_size < self.pop_size - best_count:
                 # Drop mutation if we're full
                 new_pop[new_pop_size] = c2
                 new_pop_size += 1
 
-        best = self.BestMutation()
-        for i in range(6):
-            new_pop[new_pop_size + i] = best[i]
+        # Except the last 6, these are mutations of the best
+        if best_count == 6:
+            best = self.BestMutation()
+            for i in range(best_count):
+                new_pop[new_pop_size + i] = best[i]
         
-        self.pop = np.copy(new_pop)
+        self.pop = new_pop
 
     def BestMutation(self):
         pop_idx = self.sorted_fitness[0]
@@ -228,8 +192,8 @@ class GA():
         r2 = r * rand_neg[2] + r
 
         i = best['intensity']
-        i1 = i * rand_pos[3] + i
-        i2 = i * rand_neg[3] + i
+        i1 = min(i * rand_pos[3] + i, 255)
+        i2 = max(i * rand_neg[3] + i, -255)
 
         c1 = np.array((x1, y1), dtype=self.center)
         c2 = np.array((x2, y2), dtype=self.center)
@@ -301,7 +265,12 @@ class GA():
             return np.array((center, radius, intensity), dtype=self.genome)
         else:
             # Normal distribution
-            rand = np.random.normal(0.0, 0.2, 4)
+            if self.gen < 3:
+                rand = np.random.normal(0.0, 0.2, 4)
+            elif self.gen < self.gens / 2.0:
+                rand = np.random.normal(0.0, 0.1, 4)
+            else:
+                rand = np.random.normal(0.0, 0.01, 4)
             x = individual['center']['x']
             x = max(min((rand[0] * x + x), self.width), 0)
             y = individual['center']['y']
@@ -309,7 +278,7 @@ class GA():
             
             center = np.array((x, y), dtype=self.center)
             radius = max(rand[2] * individual['radius'] + individual['radius'], 1.0)
-            intensity = max(rand[3] * individual['intensity'] + individual['intensity'], 1.0)
+            intensity = min(rand[3] * individual['intensity'] + individual['intensity'], 255)
             
             return np.array((center, radius, intensity), dtype=self.genome)
 
@@ -318,9 +287,8 @@ class GA():
     def UpdateImage(self):
         """Update self.art with the most fit individual"""
         individual = self.pop[self.sorted_fitness[0]]
-        # individual['intensity'] = min(individual['intensity'] * 2, 255)
-        print('individual: ', individual)
-        print('fitness:    ', self.fitness[self.sorted_fitness[0]])
+        # print('individual: ', individual)
+        # print('fitness:    ', self.fitness[self.sorted_fitness[0]])
         center = individual['center']
 
         Y, X = np.ogrid[:self.height, :self.width]
@@ -357,6 +325,5 @@ class GA():
 if __name__ == '__main__':
     ga = GA()
     ga.Run('images/test.png')
-    # cProfile.run('ga.Run("images/test.png")', sort="time")
     plt.ioff()
 
