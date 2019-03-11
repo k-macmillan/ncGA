@@ -5,12 +5,12 @@ from time import sleep
 
 class GA():
     ELITISM = 0.10
-    def __init__(self, population=100, generations=50, circles=50):
+    def __init__(self, population=200, generations=50, circles=50):
         self.pop_size = population
         self.gens = generations
         self.circles = circles
         self.center = np.dtype([('x', np.uint16), ('y', np.uint16)])
-        self.genome = np.dtype([('center',self.center), ('radius', np.float64), ('intensity', np.uint16) ])
+        self.genome = np.dtype([('center',self.center), ('radius', np.float64), ('intensity', np.int16) ])
         self.pop = np.zeros((self.pop_size, ), dtype=self.genome)
 
     def Reset(self):
@@ -89,7 +89,7 @@ class GA():
                            np.random.random_integers(self.height) - 1),
                            dtype=self.center)
         radius = np.random.uniform(low=1.0, high=self.max_radius / 2.0)
-        intensity = np.random.random_integers(256) - 1
+        intensity = np.random.random_integers(low=-254, high=256) - 1
         ret_val = np.array((center, radius, intensity), dtype=self.genome)
         return ret_val
 
@@ -324,6 +324,6 @@ class GA():
 
 if __name__ == '__main__':
     ga = GA()
-    ga.Run('images/test.png')
+    ga.Run('images/test0.png')
     plt.ioff()
 
