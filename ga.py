@@ -1,7 +1,7 @@
 import numpy as np
 import imageio
 import matplotlib.pyplot as plt
-from time import sleep
+from time import sleep, perf_counter
 # import cProfile
 
 class GA():
@@ -107,7 +107,6 @@ class GA():
 
         # https://stackoverflow.com/a/44874588/5492446
         center = individual['center']
-
         Y, X = np.ogrid[:self.height, :self.width]
         dist_from_center = np.sqrt((X - center['x'])**2 + (Y-center['y'])**2)
 
@@ -116,7 +115,7 @@ class GA():
         # Where the magic begins
         pixel_count = np.sum(mask)
         circle = mask * individual['intensity']
-        art = np.copy(self.art) + circle
+        art = self.art + circle
         return np.sum(np.abs(self.image - art))  - pixel_count * 0.00001
 
 # 2
@@ -319,7 +318,7 @@ class GA():
 if __name__ == '__main__':
     ga = GA()
     # cProfile.run('ga.Run("images/k.png")', sort="time")
-    ga.Run('images/darwin.png', circles=50)
+    ga.Run('images/darwin.png', circles=5)
     ga.Run('images/darwin.png', circles=100)
     ga.Run('images/darwin.png', circles=200)
     plt.ioff()
