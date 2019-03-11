@@ -2,6 +2,7 @@ import numpy as np
 import imageio
 import matplotlib.pyplot as plt
 from time import sleep
+# import cProfile
 
 class GA():
     ELITISM = 0.10
@@ -10,7 +11,7 @@ class GA():
         self.gens = generations
         self.circles = circles
         self.center = np.dtype([('x', np.uint16), ('y', np.uint16)])
-        self.genome = np.dtype([('center',self.center), ('radius', np.float64), ('intensity', np.uint8) ])
+        self.genome = np.dtype([('center',self.center), ('radius', np.float64), ('intensity', np.uint16) ])
         self.pop = np.zeros((self.pop_size, ), dtype=self.genome)
 
     def Reset(self):
@@ -29,7 +30,7 @@ class GA():
             self.EvaluatePop()
             self.Draw()
             for i in range(self.gens):
-                print('Best: ', self.pop[self.sorted_fitness[0]])
+                # print('Best: ', self.pop[self.sorted_fitness[0]])
                 # print('Worst: ', self.fitness[self.sorted_fitness[self.pop_size - 1]])
                 # print('Fitness: ', self.fitness[self.sorted_fitness[0]])
                 if i < 10:
@@ -37,21 +38,22 @@ class GA():
                 else:
                     self.Breed2()        # 2
                 self.EvaluatePop()
-                self.Draw(self.UpdateImage(True))
-                print('Generation: ', i)
+                # self.Draw(self.UpdateImage(True))
+                # print('Generation: ', i)
             self.UpdateImage()
-            self.Draw()
+            # self.Draw()
             # print(self.pop)
             # print()
             # print(self.fitness)
             # print()
             # print(self.sorted_fitness)
+            # sleep(10)
             # exit()
             self.epoch += 1
         self.EvaluatePop()
         self.UpdateImage()
         self.Draw()
-        sleep(99999)
+        sleep(15)
 
     def LoadImage(self, image):
         """Will load an image file into the format we need"""
@@ -88,20 +90,12 @@ class GA():
             temp = self.FillGenomes()
             self.pop[i] = self.FillGenomes()
 
-        # c = np.array((200, 200), dtype=self.center)
-        # c = np.array((75, 84), dtype=self.center)
-        # self.pop[0] = np.array((c, 48.0, 255), dtype=self.genome)
-        # self.Fitness2(self.pop[0])
-        # self.Draw()
-        # sleep(3)
-        # exit()
-
     def FillGenomes(self):
         """Generates a genome"""
         center = np.array((np.random.random_integers(self.width) - 1,
                            np.random.random_integers(self.height) - 1),
                            dtype=self.center)
-        radius = np.random.uniform(low=max(1.0, self.max_radius / 12.0), high=self.max_radius / 2.0)
+        radius = np.random.uniform(low=1.0, high=self.max_radius / 2.0)
         intensity = np.random.random_integers(256) - 1
         ret_val = np.array((center, radius, intensity), dtype=self.genome)
         return ret_val
@@ -110,32 +104,10 @@ class GA():
         """Evaluates each individual and sorts them"""
         self.fitness = np.zeros(self.pop_size)
         for i in range(self.pop_size):
-            self.fitness[i] = self.Fitness2(self.pop[i])
+            self.fitness[i] = self.Fitness(self.pop[i])
         self.SortPopulation()
 
     def Fitness(self, individual):
-        """Scores fitness for an individual"""
-        # Note: individual is a numpy array of dtype=self.genome
-
-        # https://stackoverflow.com/a/44874588/5492446
-
-        center = individual['center']
-
-        Y, X = np.ogrid[:self.height, :self.width]
-        dist_from_center = np.sqrt((X - center['x'])**2 + (Y-center['y'])**2)
-
-        mask = dist_from_center <= individual['radius']
-
-        image_mask = mask * self.image
-        circle_mask = mask * individual['intensity']
-
-        image_val = np.sum(image_mask, dtype=np.int64)
-        circle_val = np.sum(np.abs(image_mask - circle_mask), dtype=np.int64)
-        max_val = np.sum(mask) * 255
-        fitness = max_val - (image_val - circle_val)
-        return fitness
-
-    def Fitness2(self, individual):
         """Scores fitness for an individual"""
         # Note: individual is a numpy array of dtype=self.genome
 
@@ -148,23 +120,16 @@ class GA():
         mask = dist_from_center <= individual['radius']
 
         # Where the magic begins
-        result = np.where(mask)
-
-        no_change = 0
-        improvement = 0
-        # For each point in the mask
-        for k in range(len(result[0])):
-            i, j = result[0][k], result[1][k]
-            if self.art[i, j] == individual['intensity']:
-                no_change += 255
-            cm = np.int32(individual['intensity'])
-            improvement += 255 - np.abs(self.image[i, j] - cm)
-
-        return improvement - no_change
+        pixel_count = np.sum(mask)
+        circle = mask * individual['intensity']
+        self.art += circle
+        fitness = np.sum(np.abs(self.image - self.art))  - pixel_count * 0.00001
+        self.art -= circle
+        return fitness
 
     def SortPopulation(self):
         """Maps self.fitness to a sorted index list"""
-        self.sorted_fitness = np.argsort(-self.fitness)
+        self.sorted_fitness = np.argsort(self.fitness)
 
 
 # 2
@@ -336,7 +301,7 @@ class GA():
             return np.array((center, radius, intensity), dtype=self.genome)
         else:
             # Normal distribution
-            rand = np.random.normal(0.0, 0.1, 4)
+            rand = np.random.normal(0.0, 0.2, 4)
             x = individual['center']['x']
             x = max(min((rand[0] * x + x), self.width), 0)
             y = individual['center']['y']
@@ -350,11 +315,12 @@ class GA():
 
 
 # 4 
-    def UpdateImage(self, generation=False):
+    def UpdateImage(self):
         """Update self.art with the most fit individual"""
         individual = self.pop[self.sorted_fitness[0]]
-        individual['intensity'] = min(individual['intensity'] * 2, 255)
-        print(individual)
+        # individual['intensity'] = min(individual['intensity'] * 2, 255)
+        print('individual: ', individual)
+        print('fitness:    ', self.fitness[self.sorted_fitness[0]])
         center = individual['center']
 
         Y, X = np.ogrid[:self.height, :self.width]
@@ -362,12 +328,7 @@ class GA():
 
         mask = dist_from_center <= individual['radius']
         circle_value = mask * individual['intensity']
-        if generation:
-            art = np.copy(self.art)
-            art += circle_value
-            return art
-        else: 
-            self.art = self.art + circle_value
+        self.art = self.art + circle_value
 
     def Draw(self, image=None):
         """Draw the output to the screen"""
@@ -396,5 +357,6 @@ class GA():
 if __name__ == '__main__':
     ga = GA()
     ga.Run('images/test.png')
+    # cProfile.run('ga.Run("images/test.png")', sort="time")
     plt.ioff()
 
