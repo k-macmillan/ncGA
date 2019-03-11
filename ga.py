@@ -5,7 +5,7 @@ from time import sleep
 
 class GA():
     ELITISM = 0.10
-    def __init__(self, population=200, generations=50, circles=50):
+    def __init__(self, population=200, generations=200, circles=50):
         self.pop_size = population
         self.gens = generations
         self.circles = circles
@@ -16,8 +16,11 @@ class GA():
     def Reset(self):
         self.img_fitness = 0
 
-    def Run(self, image):
-        """Run the Genetic Algorithm"""
+    def Run(self, image, circles=None):
+        """Run the Genetic Algorthm"""
+        if circles is not None:
+            self.circles = circles
+        filename = image[7:len(image) - 4]
         self.LoadImage(image)
         self.Reset()
         print('Running...')
@@ -46,7 +49,8 @@ class GA():
         self.EvaluatePop()
         self.UpdateImage()
         self.Draw()
-        sleep(15)
+        plt.savefig('results/' + filename + '_' + str(self.circles) + '.png')
+        # sleep(15)
 
     def LoadImage(self, image):
         """Will load an image file into the format we need"""
@@ -324,6 +328,8 @@ class GA():
 
 if __name__ == '__main__':
     ga = GA()
-    ga.Run('images/test0.png')
+    ga.Run('images/mickey.png', circles=50)
+    ga.Run('images/mickey.png', circles=100)
+    ga.Run('images/mickey.png', circles=200)
     plt.ioff()
 
