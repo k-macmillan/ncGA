@@ -319,7 +319,7 @@ class GA():
 if __name__ == '__main__':
     ga = GA()
     # cProfile.run('ga.Run("images/k.png")', sort="time")
-    ga.Run('images/darwin.png', circles=5)
+    ga.Run('images/darwin.png', circles=50)
     ga.Run('images/darwin.png', circles=100)
     ga.Run('images/darwin.png', circles=200)
     plt.ioff()
