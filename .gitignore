@@ -109,3 +109,10 @@ lib/
 local/
 share/
 include/
+
+# LaTeX
+hw.aux
+hw.fdb_latexmk
+hw.fls
+hw.out
+hw.pdf
