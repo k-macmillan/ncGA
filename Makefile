@@ -5,5 +5,5 @@ all: HW
 clean:
 	-rm -f $(TEX).pdf
 
-HW: hw.tex
+HW: $(TEX).tex
 	latexmk -pdf -pdflatex="pdflatex -interaction=nonstopmode" --shell-escape $(TEX).tex
