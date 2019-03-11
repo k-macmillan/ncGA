@@ -2,10 +2,11 @@ import numpy as np
 import imageio
 import matplotlib.pyplot as plt
 from time import sleep
+# import cProfile
 
 class GA():
     ELITISM = 0.10
-    def __init__(self, population=200, generations=200, circles=50):
+    def __init__(self, population=200, generations=200, circles=22):
         self.pop_size = population
         self.gens = generations
         self.circles = circles
@@ -26,14 +27,13 @@ class GA():
         print('Running...')
         self.epoch = 0
         while self.epoch != self.circles:
-            self.img_fitness = self.EvaluateImage()
             self.InitializePop()    # 1
             self.EvaluatePop()
             self.Draw()
             for self.gen in range(self.gens):
                 # print('Generation: ', self.gen)
                 # print('Best: ', self.pop[self.sorted_fitness[0]])
-                # print('Worst: ', self.fitness[self.sorted_fitness[self.pop_size - 1]])
+                # print('Worst:   ', self.fitness[self.sorted_fitness[self.pop_size - 1]])
                 # print('Fitness: ', self.fitness[self.sorted_fitness[0]])
                 self.Breed()        # 2
                 self.EvaluatePop()
@@ -49,7 +49,7 @@ class GA():
         self.EvaluatePop()
         self.UpdateImage()
         self.Draw()
-        plt.savefig('results/' + filename + '_' + str(self.circles) + '.png')
+        plt.savefig('results/' + filename + '_' + str(self.circles) + '_v2.png')
         # sleep(15)
 
     def LoadImage(self, image):
@@ -66,43 +66,40 @@ class GA():
         self.perfect_image = np.sum(self.image)
         self.max_image = 255 * self.width * self.height
         self.art = np.zeros((self.height, self.width))
+        self.max_radius = self.max_dim
 
-    def EvaluateImage(self):
-        """Evaluates the current epoch image (self.art) against self.image"""
-        self.pixel_diff = self.perfect_image - np.sum(self.art)
-        return self.max_image - np.abs(self.pixel_diff)
-
-    def DefineMaxCircleRadius(self):
-        """Circle radius is dependent on desired affected pixels"""
-        art_val = np.sum(self.art)
-        if art_val == 0:
-            self.max_radius = self.max_dim
-        else:
-            self.max_radius = (self.img_fitness / self.max_image ) * self.max_dim
 # 1
     def InitializePop(self):
         """Initialize pop"""
-        self.DefineMaxCircleRadius()
+        # self.pop = np.fromiter((self.FillGenomes() for _ in self.pop), self.genome)
+        self.rand_x = np.random.random_integers(low=0,
+                                                high=self.width - 1,
+                                                size=self.pop_size)
+        self.rand_y = np.random.random_integers(low=0,
+                                                high=self.height - 1,
+                                                size=self.pop_size)
+        self.rand_r = np.random.uniform(low=1.0,
+                                        high=self.max_radius / 2.0,
+                                        size=self.pop_size)
+        self.rand_i = np.random.random_integers(low=-255,
+                                                high=255,
+                                                size=self.pop_size)
         for i in range(self.pop_size):
-            temp = self.FillGenomes()
-            self.pop[i] = self.FillGenomes()
+            self.pop[i] = self.FillGenomes(i)
 
-    def FillGenomes(self):
+    def FillGenomes(self, i):
         """Generates a genome"""
-        center = np.array((np.random.random_integers(self.width) - 1,
-                           np.random.random_integers(self.height) - 1),
-                           dtype=self.center)
-        radius = np.random.uniform(low=1.0, high=self.max_radius / 2.0)
-        intensity = np.random.random_integers(low=-254, high=256) - 1
-        ret_val = np.array((center, radius, intensity), dtype=self.genome)
-        return ret_val
+        center = np.array((self.rand_x[i], self.rand_y[i]), dtype=self.center)
+        return np.array((center, self.rand_r[i], self.rand_i[i]),
+                        dtype=self.genome)
 
     def EvaluatePop(self):
         """Evaluates each individual and sorts them"""
         self.fitness = np.zeros(self.pop_size)
         for i in range(self.pop_size):
             self.fitness[i] = self.Fitness(self.pop[i])
-        self.SortPopulation()
+        # Sort
+        self.sorted_fitness = np.argsort(self.fitness)
 
     def Fitness(self, individual):
         """Scores fitness for an individual"""
@@ -119,15 +116,8 @@ class GA():
         # Where the magic begins
         pixel_count = np.sum(mask)
         circle = mask * individual['intensity']
-        self.art += circle
-        fitness = np.sum(np.abs(self.image - self.art))  - pixel_count * 0.00001
-        self.art -= circle
-        return fitness
-
-    def SortPopulation(self):
-        """Maps self.fitness to a sorted index list"""
-        self.sorted_fitness = np.argsort(self.fitness)
-
+        art = np.copy(self.art) + circle
+        return np.sum(np.abs(self.image - art))  - pixel_count * 0.00001
 
 # 2
     def Breed(self):
@@ -154,7 +144,7 @@ class GA():
 
         # Fill the remainder of the population with random selection
         new_pop_size = royalty + royal_kids
-        if self.gen < 10:
+        if self.gen < 0.5 * self.gens:
             best_count = 0
         else:
             best_count = 6
@@ -270,11 +260,11 @@ class GA():
         else:
             # Normal distribution
             if self.gen < 3:
-                rand = np.random.normal(0.0, 0.2, 4)
+                rand = np.random.normal(0.0, 0.3, 4)
             elif self.gen < self.gens / 2.0:
-                rand = np.random.normal(0.0, 0.1, 4)
+                rand = np.random.normal(0.0, 0.2, 4)
             else:
-                rand = np.random.normal(0.0, 0.01, 4)
+                rand = np.random.normal(0.0, 0.1, 4)
             x = individual['center']['x']
             x = max(min((rand[0] * x + x), self.width), 0)
             y = individual['center']['y']
@@ -328,8 +318,9 @@ class GA():
 
 if __name__ == '__main__':
     ga = GA()
-    ga.Run('images/mickey.png', circles=50)
-    ga.Run('images/mickey.png', circles=100)
-    ga.Run('images/mickey.png', circles=200)
+    # cProfile.run('ga.Run("images/k.png")', sort="time")
+    ga.Run('images/darwin.png', circles=5)
+    ga.Run('images/darwin.png', circles=100)
+    ga.Run('images/darwin.png', circles=200)
     plt.ioff()
 
