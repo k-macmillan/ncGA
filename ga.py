@@ -51,19 +51,19 @@ class GA():
             elif self.epoch == 49:
                 if self.headless:
                     self.Draw()
-                plt.savefig('results/' + filename + '_050.png')
+                plt.savefig('results/' + filename + '_0050.png')
             elif self.epoch == 99:
                 if self.headless:
                     self.Draw()
-                plt.savefig('results/' + filename + '_100.png')
+                plt.savefig('results/' + filename + '_0100.png')
             elif self.epoch == 199:
                 if self.headless:
                     self.Draw()
-                plt.savefig('results/' + filename + '_200.png')
+                plt.savefig('results/' + filename + '_0200.png')
             # elif self.epoch == 499:
             #     if self.headless:
             #         self.Draw()
-            #     plt.savefig('results/' + filename + '_500.png')
+            #     plt.savefig('results/' + filename + '_0500.png')
             # elif self.epoch == 999:
             #     if self.headless:
             #         self.Draw()
