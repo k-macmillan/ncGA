@@ -6,7 +6,7 @@ import cProfile
 
 class GA():
     ELITISM = 0.10
-    def __init__(self, population=20, generations=70, circles=200, headless=False):
+    def __init__(self, population=10, generations=70, circles=200, headless=False):
         self.pop_size = population
         self.gens = generations
         self.circles = circles
@@ -80,7 +80,6 @@ class GA():
 # 1
     def InitializePop(self):
         """Initialize pop"""
-        # self.pop = np.fromiter((self.FillGenomes() for _ in self.pop), self.genome)
         self.rand_x = np.random.uniform(low=0,
                                         high=self.width - 1,
                                         size=self.pop_size)
@@ -268,12 +267,10 @@ class GA():
     def UpdateImage(self):
         """Update self.art with the most fit individual"""
         individual = self.pop[self.sorted_fitness[0]]
-        center = individual['center']
+        cx, cy, r = individual['center']['x'], individual['center']['y'], individual['radius']
+        Y, X = np.ogrid[-cy:self.height - cy, -cx:self.width - cx]
+        mask = X**2 + Y**2 <= r**2
 
-        Y, X = np.ogrid[:self.height, :self.width]
-        dist_from_center = np.sqrt((X - center['x'])**2 + (Y-center['y'])**2)
-
-        mask = dist_from_center <= individual['radius']
         circle_value = mask * individual['intensity']
         self.art = self.art + circle_value
 
