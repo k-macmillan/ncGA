@@ -120,6 +120,7 @@ class GA():
         dist_from_center = np.sqrt((X - center['x'])**2 + (Y-center['y'])**2, dtype=np.float32)
 
         mask = dist_from_center <= individual['radius']
+
         # Where the magic begins
         pixel_count = np.sum(mask, dtype=np.float32)
         circle = mask * individual['intensity']
@@ -307,6 +308,6 @@ class GA():
 if __name__ == '__main__':
     ga = GA(headless=False)
     # cProfile.run('ga.Run("images/test3.png")', sort="time")
-    ga.Run('images/davinci.png')
+    ga.Run('images/mona_lisa.png')
     plt.ioff()
 
