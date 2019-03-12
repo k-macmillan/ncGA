@@ -6,25 +6,34 @@ from time import sleep, perf_counter
 
 class GA():
     ELITISM = 0.10
-    def __init__(self, population=10, generations=50, circles=200, headless=False):
-        self.pop_size = population
-        self.gens = generations
+    def __init__(self, circles=4000, headless=False):
+        self.epoch = 0
+        self.SetPopAttributes()
         self.circles = circles
         self.center = np.dtype([('x', np.float32), ('y', np.float32)])
         self.genome = np.dtype([('center',self.center), ('radius', np.float32), ('intensity', np.float32) ])
         self.pop = np.zeros((self.pop_size, ), dtype=self.genome)
         self.headless = headless
 
+    def SetPopAttributes(self):
+        if self.epoch < 200:
+            self.pop_size = 200
+            self.gens = 200
+        else:
+            self.pop_size = 10
+            self.gens = 50
+
     def Reset(self):
         self.img_fitness = 0
+        self.epoch = 0
 
     def Run(self, image):
         """Run the Genetic Algorthm"""
         filename = image[7:len(image) - 4]
         self.LoadImage(image)
         self.Reset()
-        self.epoch = 0
         while self.epoch < self.circles:
+            self.SetPopAttributes()
             self.InitializePop()    # 1
             self.EvaluatePop()
             if not self.headless:
@@ -51,6 +60,26 @@ class GA():
                 if self.headless:
                     self.Draw()
                 plt.savefig('results/' + filename + '_200.png')
+            # elif self.epoch == 499:
+            #     if self.headless:
+            #         self.Draw()
+            #     plt.savefig('results/' + filename + '_500.png')
+            # elif self.epoch == 999:
+            #     if self.headless:
+            #         self.Draw()
+            #     plt.savefig('results/' + filename + '_1000.png')
+            # elif self.epoch == 1999:
+            #     if self.headless:
+            #         self.Draw()
+            #     plt.savefig('results/' + filename + '_2000.png')
+            # elif self.epoch == 2999:
+            #     if self.headless:
+            #         self.Draw()
+            #     plt.savefig('results/' + filename + '_3000.png')
+            elif self.epoch == 3999:
+                if self.headless:
+                    self.Draw()
+                plt.savefig('results/' + filename + '_4000.png')
             self.epoch += 1
 
         # When done display final image
@@ -301,6 +330,6 @@ class GA():
 if __name__ == '__main__':
     ga = GA(headless=True)
     # cProfile.run('ga.Run("images/test3.png")', sort="time")
-    ga.Run('images/mona_lisa.png')
+    ga.Run('images/adam.png')
     plt.ioff()
 
