@@ -6,7 +6,7 @@ import cProfile
 
 class GA():
     ELITISM = 0.10
-    def __init__(self, population=50, generations=50, circles=200, headless=False):
+    def __init__(self, population=20, generations=70, circles=200, headless=False):
         self.pop_size = population
         self.gens = generations
         self.circles = circles
@@ -42,7 +42,7 @@ class GA():
             elif self.epoch == 49:
                 if self.headless:
                     self.Draw()
-                plt.savefig('results/' + filename + '_50.png')
+                plt.savefig('results/' + filename + '_050.png')
             elif self.epoch == 99:
                 if self.headless:
                     self.Draw()
@@ -112,14 +112,11 @@ class GA():
 
     def Fitness(self, individual):
         """Scores fitness for an individual"""
-        # Note: individual is a numpy array of dtype=self.genome
 
-        # https://stackoverflow.com/a/44874588/5492446
-        center = individual['center']
-        Y, X = np.ogrid[:self.height, :self.width]
-        dist_from_center = np.sqrt((X - center['x'])**2 + (Y-center['y'])**2, dtype=np.float32)
-
-        mask = dist_from_center <= individual['radius']
+        # https://stackoverflow.com/a/44874588/5492446 + Austin
+        cx, cy, r = individual['center']['x'], individual['center']['y'], individual['radius']
+        Y, X = np.ogrid[-cy:self.height - cy, -cx:self.width - cx]
+        mask = X**2 + Y**2 <= r**2
 
         # Where the magic begins
         pixel_count = np.sum(mask, dtype=np.float32)
@@ -228,7 +225,6 @@ class GA():
     def Crossover(self, a, b):
         """Performs crossover on two selected individuals and returns the 
            children to be added to new_pop"""
-        # return None, None
         avg = self.AverageGeneome(a, b)
         mutant = self.MutateGeneome(avg)
         return avg, mutant
@@ -306,7 +302,7 @@ class GA():
 
 
 if __name__ == '__main__':
-    ga = GA(headless=False)
+    ga = GA(headless=True)
     # cProfile.run('ga.Run("images/test3.png")', sort="time")
     ga.Run('images/mona_lisa.png')
     plt.ioff()
