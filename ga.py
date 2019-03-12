@@ -2,11 +2,11 @@ import numpy as np
 import imageio
 import matplotlib.pyplot as plt
 from time import sleep, perf_counter
-import cProfile
+# import cProfile
 
 class GA():
     ELITISM = 0.10
-    def __init__(self, population=10, generations=70, circles=200, headless=False):
+    def __init__(self, population=10, generations=50, circles=200, headless=False):
         self.pop_size = population
         self.gens = generations
         self.circles = circles
