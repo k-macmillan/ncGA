@@ -23,10 +23,11 @@ Then we performed tests on more complicated images:
 </p>
 
 # Progression & Results
-<p align="center">
-  <img src="results/mona_lisa/mona_lisa.gif?raw=true" alt="Mona Lisa"/>
-  <img src="results/k/k.gif?raw=true" alt="k"/>
-  <img src="results/ironman/ironman.gif?raw=true" alt="Iron Man"/>
-  <img src="results/mandlebrot/mandlebrot.gif?raw=true" alt="Mandlebrot Set"/>
-</p>
-
+  <p align="center"><img src="results/mona_lisa/mona_lisa.gif?raw=true" alt="Mona Lisa"/></p>
+  <p align="center">Mona Lisa</p>  
+  <p align="center"><img src="results/k/k.gif?raw=true" alt="k"/></p>
+  <p align="center">k</p>  
+  <p align="center"><img src="results/ironman/ironman.gif?raw=true" alt="Iron Man"/></p>
+  <p align="center">Iron Man</p>  
+  <p align="center"><img src="results/mandlebrot/mandlebrot.gif?raw=true" alt="Mandlebrot Set"/></p>
+  <p align="center">Mandlebrot Set</p>
