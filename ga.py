@@ -60,22 +60,22 @@ class GA():
                 if self.headless:
                     self.Draw()
                 plt.savefig('results/' + filename + '_0200.png')
-            # elif self.epoch == 499:
-            #     if self.headless:
-            #         self.Draw()
-            #     plt.savefig('results/' + filename + '_0500.png')
-            # elif self.epoch == 999:
-            #     if self.headless:
-            #         self.Draw()
-            #     plt.savefig('results/' + filename + '_1000.png')
-            # elif self.epoch == 1999:
-            #     if self.headless:
-            #         self.Draw()
-            #     plt.savefig('results/' + filename + '_2000.png')
-            # elif self.epoch == 2999:
-            #     if self.headless:
-            #         self.Draw()
-            #     plt.savefig('results/' + filename + '_3000.png')
+            elif self.epoch == 499:
+                if self.headless:
+                    self.Draw()
+                plt.savefig('results/' + filename + '_0500.png')
+            elif self.epoch == 999:
+                if self.headless:
+                    self.Draw()
+                plt.savefig('results/' + filename + '_1000.png')
+            elif self.epoch == 1999:
+                if self.headless:
+                    self.Draw()
+                plt.savefig('results/' + filename + '_2000.png')
+            elif self.epoch == 2999:
+                if self.headless:
+                    self.Draw()
+                plt.savefig('results/' + filename + '_3000.png')
             elif self.epoch == 3999:
                 if self.headless:
                     self.Draw()
