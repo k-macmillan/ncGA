@@ -1,7 +1,7 @@
 # Exploration of Genetic Algorithm
 This project was an exploration into Genetic Algorithm use in generating images. Given an image and a set number of circles can we approximate the image?
 
-![Mandlebrot Set](images/mandlebrot.png "Mandlebrot Set")
+![Mandlebrot Set](results/mandlebrot/mandlebrot_raw_4000.png?raw=true "Mandlebrot Set")
 
 # Method
 We utilized a pool of individual circles and performed crossover and mutations for several generations. The best circle was found, then the process was repeated.
