@@ -41,9 +41,9 @@ We eventually determined that, given a circle, we should:
 \item Determine the number of pixels occupied by the circle, $n$
 \item Generate the circle in a mask
 \item Add this mask to the current circle stack, constructing  a prospective next-circle stack
-\item Determine the total difference between this prospective stack and the actual image to be reconstructed. This is $e$
-\item Calculate an offset to linearly shift fitness against circle size
-\item Return a final fitness $e - n*scale$, where scale is determined by the number of total pixels in the image 
+\item Determine the total difference between this prospective stack and the actual image to be reconstructed, $e$
+\item Formulate a normalization factor, $p = n/(total pixel count)$
+\item Return a final fitness $e - n*p$
 \end{enumerate}
 
 Our function definition is as follows:
@@ -60,11 +60,23 @@ def Fitness(self, individual):
   return np.sum(np.abs(self.image - art)) - pixel_count * self.pixel_modifier
 \end{lstlisting}
 
-This fitness function proved to be the key to convergence. Once we had it in place, the stars aligned!
+This fitness function tracks how well the circle improved its local area relative to its size. Once we had it in place, the stars aligned and things converged!
 
 \subsection{Evolving a New Circle}
+Our process of generating and selecting a new circle is somewhat involved. Each final circle is the product of a full evolutionary run with its own population. We follow the standard \textit{initialize population}$\rightarrow$\textit{mutate/crossover}$\rightarrow$\textit{test population fitness}$\rightarrow$\textit{select survivors}$\rightarrow$
+\textit{breed next generation} pipeline in this process but have added in some interesting quirks to both the mutation/corssover and selection steps. 
 
 \subsubsection{Mutation and Crossover}
+Our crossover implementation is as simple as it gets: take two individuals and calculate the average $x$ and $y$ center positions and the radii. The mutation process is also straightforward but takes into account how many generations have been evolved up to that point. For each attribute $y$ of the circle to mutate:
+\begin{enumerate}
+\item Generate a Gaussian random number $p$, $\bar{x} = 0, \sigma = s$
+\item Determine a proportional shift $\tilde{y} = p*y$
+\item Calculate the new, mutated value $y^{\prime} = y + \tilde{y}$
+\item Set $y = y^{\prime}$ 
+\end{enumerate}
+The distribution deviation $\sigma$ changes depending on generation count. For the first three generations $\sigma = 0.3$, for generations in the first half after the first three $\sigma = 0.2$, and for the last half of the generations $\sigma = 0.1$. This has the effect of tapering off the randomness of mutation variations as generation count increases and, hopefully, the individuals home in on local maxima. Simulated annealing can work alongside GAs!
+
+We also implemented another mutation strategy for a specific case. 
 
 \subsubsection{Selection}
 
