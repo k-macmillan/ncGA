@@ -2,7 +2,6 @@
 \input{hw.sty}
 \usepackage[final]{pdfpages}
 
-
 \title{Homework \#2}
 \author{Kyle MacMillan, \\Remington Bullis}
 
@@ -10,21 +9,68 @@
 \begin{document}
 \maketitle
 
-% Any information we want to say upfront
-The repository for this paper is \href{https://github.com/macattackftw/ncGA}{here}. 
-The \texttt{README.md} contains a gif of our solution in action.
+Having now had a half-semester to digest and process information about nature-inspired computing approcahes like simulated annealing and various implementations of evolutionary algorithms, Homework \#2 challenged us to tackle a nontrivial task: image reproduction. Our official bidding was to use an evolutionary algorithm (with our own quirks)  to evolve the closest approximation of a given image. Our implementation focused on a very robust generation-to-generation reproduction system using both corssover and point mutations. This approach yielded remarkable results. 
+\\ \\
+\textbf{Note: }The repository for this paper can be found \href{https://github.com/macattackftw/ncGA}{here}. 
+The \verb|README.md| contains a gif of our solution in action and a full suite of test results can be seen in the \verb|results| folder. A selection of these results can also be seen in Appendix A. 
 
 \section{} %%  This will generate a numbered problem header.
 
-\subsection{Statement}
-Problem statement.
+\subsection{Initial Approach and Encoding}
+Before programming could begin we needed to know \textbf{1)} the language with which we would write our project, and \textbf{2)} the exact algorithm we were implementing. Python was the obvious choice for quickly iterating and testing. Algorithm development started at the discussion of how exactly we were going to generate images. After some back and forth we decided to build our image reconstructions purely in grayscale, and with layered circles. One "epoch" would be completed to generate an optimal circle. Each epoch would consist of its own population which was to be evolved over a set number of generations, with the most fit individual pulled and added to the reconstruction. While computationally intensive this one-at-a-time approach was expected to be robust and consistently convergent. 
+\\
+Encoding the properties of a circle into a genome was quite simple. We used \verb|numpy| to define a datatype that held the following information:
+\begin{itemize}
+\item The circle's center coordinates, $(x, y)$
+\item The circle's radius, $r$
+\item the circle's intensity, or alpha value, $i$
+\end{itemize}
 
-\subsection{Method}
+The actual definition of our genome can be seen below:
+\begin{lstlisting}
+self.center = np.dtype([('x', np.float32), ('y', np.float32)])
+self.genome = np.dtype([('center',self.center), ('radius', np.float32), ('intensity', np.float32) ])
+\end{lstlisting}
 
 
-\newpage
+\subsection{Measuring Individual Fitness}
+Given a circle to be placed on the stack of circles, how do we determine how "fit" this individual is relative to any other circle? This question plagued us for days. Unlike a simple mathematical function one can't just plug a circle into an image and get a numeric out indicating progress. The circle's fitness depends on not only the information confined to its bounds, but also how the circle fits into the larger context of the image. Our initial approaches to generating a fitness function proved fruitless; one simply filled the image as quickly as possible with white, and another would produce results only slightly better than random circle placement. 
+
+We eventually determined that, given a circle, we should:
+\begin{enumerate}
+\item Determine the number of pixels occupied by the circle, $n$
+\item Generate the circle in a mask
+\item Add this mask to the current circle stack, constructing  a prospective next-circle stack
+\item Determine the total difference between this prospective stack and the actual image to be reconstructed. This is $e$
+\item Calculate an offset to linearly shift fitness against circle size
+\item Return a final fitness $e - n*scale$, where scale is determined by the number of total pixels in the image 
+\end{enumerate}
+
+Our function definition is as follows:
+\begin{lstlisting}
+def Fitness(self, individual):
+  cx, cy, r = individual['center']['x'], individual['center']['y'], individual['radius']
+  Y, X = np.ogrid[-cy:self.height - cy, -cx:self.width - cx]
+  mask = X**2 + Y**2 <= r**2                   # Calculate mask
+  # Where the magic begins
+  pixel_count = np.sum(mask, dtype=np.float32)
+  circle = mask * individual['intensity']
+  art = self.art + circle 						     # Gen prospective stack
+
+  return np.sum(np.abs(self.image - art)) - pixel_count * self.pixel_modifier
+\end{lstlisting}
+
+This fitness function proved to be the key to convergence. Once we had it in place, the stars aligned!
+
+\subsection{Evolving a New Circle}
+
+\subsubsection{Mutation and Crossover}
+
+\subsubsection{Selection}
+
 \subsection{Results}
-Our results.
+
+\subsection{Conclusions}
 
 \begin{figure}[H]
 \centering

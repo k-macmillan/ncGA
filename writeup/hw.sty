@@ -19,17 +19,19 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows}
 \usepackage{framed}
+\usepackage[scaled=0.75]{FiraMono}
+%\usepackage{newtxtt}
 
 \usepackage{listings}
-\lstset{language=python,frame=ltrb,framesep=5pt,basicstyle=\normalsize,
- keywordstyle=\ttfamily\color{DarkRed},
+\lstset{language=python,frame=ltrb,framesep=5pt,basicstyle=\ttfamily,
+ keywordstyle=\ttfamily\color{DarkRed}\bfseries,
 %morecomment=[n][\textbf]{In\ [}{]\:},
 %morecomment=[n][\textbf]{Out\ [}{]\:},
 morecomment=[s][\color{blue}]{In\ [}{]\:},
 morecomment=[s][\color{red}]{Out[}{]\:},
-identifierstyle=\ttfamily\color{DarkBlue}\bfseries,
+identifierstyle=\ttfamily\color{DarkBlue},
 commentstyle=\color{OliveGreen},
-stringstyle=\ttfamily,
+stringstyle=\ttfamily\color{Orange},
 showstringspaces=false,tabsize = 3}
 
 \lstdefinelanguage{shell} {
@@ -101,4 +103,5 @@ morecomment=[s][\color{red}]{Out[}{]\:},
 
 
 \usepackage[compact,explicit]{titlesec}
-\titleformat{\section}[runin]{\large\bfseries}{}{0pt}{\titlerule[1.5pt]\newline\vspace*{-4pt} Problem\quad\thesection\newline}[\vspace{0.01ex}{\titlerule[1.5pt]}]
+\titleformat{\section}[runin]{\large\bfseries}{}{0pt}{\titlerule[1.5pt]\newline\vspace*{-4pt}\quad
+\newline}%[\vspace{0.01ex}{\titlerule[1.5pt]}]
