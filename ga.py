@@ -100,20 +100,9 @@ class GA():
         else:
             self.height, self.width = self.image.shape
         self.max_dim = np.float32(max(self.height, self.width))
-        self.perfect_image = np.sum(self.image)
-        # self.max_image = 255 * self.width * self.height
+        self.pixel_count = np.float32(self.height * self.width)
         self.art = np.zeros((self.height, self.width), dtype=np.float32)
         self.max_radius = self.max_dim / 2.0
-        self.SetPixelModifier()
-
-    def SetPixelModifier(self):
-    	pixels = self.height * self.width
-    	i = 0
-    	while pixels > 0.0
-    		pixels /= 10.0
-    		i += 1
-
-    	self.pixel_modifier = np.float32(1.0 / 10**i)
 
 # 1
     def InitializePop(self):
@@ -156,11 +145,11 @@ class GA():
         mask = X**2 + Y**2 <= r**2
 
         # Where the magic begins
-        pixel_count = np.sum(mask, dtype=np.float32)
+        circle_pixels = np.sum(mask, dtype=np.float32)
         circle = mask * individual['intensity']
         art = self.art + circle
 
-        return np.sum(np.abs(self.image - art)) - pixel_count * self.pixel_modifier
+        return np.sum(np.abs(self.image - art)) - circle_pixels / self.pixel_count
 
 # 2
     def Breed(self):
