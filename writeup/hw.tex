@@ -82,8 +82,27 @@ We also implemented another mutation strategy for a specific case to be discusse
 The approach we've taken to population evolution is a bit more complicated than ranked selection and breeding. Given a population ranked by fitness we select a top proportion (the "royalty") and have them interbreed Hapsburg-style to generate a collection of new individuals equal in size to the input "royalty". These are crossed-over, mutated, and added to the new population. Then, (if population size > six) we take the most fit individual, who is also royalty, and mutate it using the special-case mutation described above to generate six new individuals. These are added to the new population. The remaining slots in the new population are filled with randomly-generated individuals. Combining random individual generation, elitist interbreeding, and several mutations of the most-fit individual into the next generation leads to a very robust population which captures the highlights of the previous population without stepping on new innovation.  
 
 \subsection{Results}
+The algorithm described in the above sections functioned stupendously well. In initial testing it became clear even with small circle counts that the algorithm was converging quickly to reconstructions that contained core structural information of the original images. Figure \ref{fig:darwin_0050} shows this early tendency towards low-frequency, high-gain information clearly. As circle counts increased high-frequency information started appearing, with massive circle counts almost identical to the original image. Over a dozen examples of high-count reconstructions can be found in Appendix A. 
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.4\textwidth]{../results/darwin/darwin_0050}
+\noindent\includegraphics[width=0.4\textwidth]{../results/darwin/darwin_4000}
+\caption{A portrait of Charles Darwin drawin with 50 and 4000 circles, repsectively. }
+\label{fig:darwin_0050}
+\end{figure}
+There are some cases where the algorithm does not perform as well as expected. One case is that of cartoon characters: large swaths of empty space punctuated by very sharp, thin lines and hard gradients. Such information proved difficult for circles to represent using low circle counts. However, given a truly massive number of elements and time to work with, the algorithm did manage to reconstruct drawings satisfactorily. Figure \ref{fig:hobbes_0200} demonstrates this behavior well. 
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.4\textwidth]{../results/cartoons/hobbes_0200}
+\noindent\includegraphics[width=0.4\textwidth]{../results/mickey/mickey_4000}
+\caption{A portrait of Charles Darwin drawin with 50 and 4000 circles, repsectively. }
+\label{fig:hobbes_0200}
+\end{figure}
+Curiously our initial expectations about larger populations leading to faster convergence were incorrect. 
+
 
 \subsection{Conclusions}
+Perhaps unsurprisingly, we discovered that robust genetic algorithms work well to (eventually) reproduce images from primitive shapes. While our implementation focused exclusively on recontruction of grayscale images with 
 
 \begin{figure}[H]
 \centering
