@@ -84,19 +84,42 @@ $$
 $$
 
 \subsubsection{Mutation and Crossover}
-Our crossover implementation is as simple as it gets: take two individuals and calculate the average $x$ and $y$ center positions, the radii, and the intensity. The mutation process takes into account how many generations have been evolved up to that point and uses a step function to determine what the normal distribution's $\sigma$ should be. For each attribute $y$ of the circle to mutate:
+Our crossover implementation is as simple as it gets: take two individuals and calculate the average $x$ and $y$ center positions, the radii, and the intensity. The mutation process takes into account how many generations have been evolved up to that point and uses a step function to determine what the normal distribution's $\mu$ and $\sigma$ should be. For each attribute $a$ of the circle to mutate:
 \begin{enumerate}
-\item Generate a Gaussian random number $p$, $\bar{x} = 0, \sigma = s$
-\item Determine a proportional shift $\tilde{y} = p*y$
-\item Calculate the new, mutated value $y^{\prime} = y + \tilde{y}$
-\item Set $y = y^{\prime}$ 
+\item Generate a Gaussian random number $p$ using $\mu, \sigma$
+\item Determine a proportional shift $\tilde{a} = p*a$
+\item Calculate the new, mutated value $a^{\prime} = a + \tilde{a}$
+\item Set $a = a^{\prime}$ 
 \end{enumerate}
 The distribution deviation $\sigma$ changes depending on generation count. For the first three generations $\sigma = 0.3$, for generations in the first half after the first three $\sigma = 0.2$, and for the last half of the generations $\sigma = 0.1$. This has the effect of tapering off the randomness of mutation variations as generation count increases and, hopefully, the individuals home in on local maxima. Simulated annealing can work alongside GAs!
 
 We also implemented another mutation strategy for a specific case to be discussed later. This takes in a circle and explicitly mutates each attribute in both an increasing \textit{and} decreasing direction.
 
 \subsubsection{Selection and Generation}
-The approach we've taken to population evolution is a bit more complicated than ranked selection and breeding. Given a population ranked by fitness we select a top proportion (the "royalty") and have them interbreed Hapsburg-style to generate a collection of new individuals equal in size to the input "royalty". These are crossed-over, mutated, and added to the new population. Then, (if population size > six) we take the most fit individual, who is also royalty, and mutate it using the special-case mutation described above to generate six new individuals. These are added to the new population. The remaining slots in the new population are filled with randomly-generated individuals. Combining random individual generation, elitist interbreeding, and several mutations of the most-fit individual into the next generation leads to a very robust population which captures the highlights of the previous population without stepping on new innovation.  
+The approach we've taken to population evolution is a bit more complicated than ranked selection and breeding. 
+
+There are four distinct categories for selection:
+\begin{enumerate}
+    \item Royalty survive
+    \item Royalty breed with commoner
+    \item Everyone has a chance to breed
+    \item Most fit undergoes inbreeding
+\end{enumerate}
+
+Given a population ranked by fitness we select a top proportion (the ``Royalty'') to survive into the next generation. This is defined by the \texttt{ELITISM} class member. Then we perform what we call \texttt{Cinderella Selection} in which a random member of the Royalty will breed with a commoner. This produces two children:
+\begin{enumerate}
+    \item An averaging of the parents
+    \item A mutation of the average
+\end{enumerate}
+
+The next selection step is random chance, where any member could breed with any other member. In particularly small populations it is possible this will be a duplicate of a previous arrangement. And in the final step we take the most fit (``Best'') individual and perform inbreeding, Habsburg-style. The Best undergoes a positive and negative mutation to each of the three categories:
+\begin{itemize}
+    \item Center
+    \item Radius
+    \item Intensity
+\end{itemize}
+
+Since this is the best we do not wish to stray too far from where we currently are, therefore for positive mutations we see $\mu = 0.1$ and $\sigma = 0.1$, while for negative mutations we see $\mu = -0.1$ and $\sigma = 0.1$. This slightly offsets the normal distribution so a small change is effected to each of the six resulting offspring.
 
 \subsection{Results}
 The algorithm described in the above sections functioned stupendously well. In initial testing it became clear even with small circle counts that the algorithm was converging quickly to reconstructions that contained core structural information of the original images. Figure \ref{fig:darwin_0050} shows this early tendency towards low-frequency, high-gain information clearly. As circle counts increased high-frequency information started appearing, with massive circle counts almost identical to the original image. Over a dozen examples of high-count reconstructions can be found in Appendix A. 
