@@ -19,9 +19,9 @@ Having now had a half-semester to digest and process information about nature-in
 \textbf{Note: }The repository for this paper can be found \href{https://github.com/macattackftw/ncGA}{here}. 
 The \verb|README.md| contains a gif of our solution in action and a full suite of test results can be seen in the \verb|results| folder. A selection of these results can also be seen in Appendix A. 
 
-\section{} %%  This will generate a numbered problem header.
+%\section*{} %%  This will generate a numbered problem header.
 
-\subsection{Initial Approach and Encoding}
+\section*{Initial Approach and Encoding}
 Before programming could begin we needed to know \textbf{1)} the language with which we would write our project, and \textbf{2)} the exact algorithm we were implementing. Python was the obvious choice for quickly iterating and testing. Algorithm development started at the discussion of how exactly we were going to generate images. After some back and forth we decided to build our image reconstructions purely in grayscale, and with layered circles. One ``epoch'' would be completed to generate an optimal circle. Each epoch would consist of a \textit{uniform randomly} generated population which was to be evolved over a set number of generations, with the most fit individual pulled and added to the reconstruction. While computationally intensive this one-at-a-time approach was expected to be robust and consistently convergent. 
 \\
 Encoding the properties of a circle into a genome was quite simple. We used \verb|numpy| to define a datatype that held the following information:
@@ -38,7 +38,7 @@ genome = np.dtype([('center', self.center), ('radius', np.float32), ('intensity'
 \end{minted}
 
 
-\subsection{Measuring Individual Fitness}
+\section*{Measuring Individual Fitness}
 Given a circle to be placed on the stack of circles, how do we determine how "fit" this individual is relative to any other circle? This question plagued us for days. Unlike a simple mathematical function one can't just plug a circle into an image and get a numeric out indicating progress. The circle's fitness depends on not only the information confined to its bounds, but also how the circle fits into the larger context of the image. Our initial approaches to generating a fitness function proved fruitless; one simply filled the image as quickly as possible with white, and another would produce results only slightly better than random circle placement. 
 
 We eventually determined that, given a circle, we should:
@@ -73,7 +73,7 @@ def Fitness(self, individual):
 
 This fitness function tracks how well the circle improved its local area relative to its size. Once we had it in place, the stars aligned and things converged!
 
-\subsection{Evolving a New Circle}
+\section*{Evolving a New Circle}
 Our process of generating and selecting a new circle is somewhat involved. Each final circle is the product of a full evolutionary run with its own population. We followed a fairly standard approach:
 
 $$
@@ -83,8 +83,9 @@ $$
 \rightarrow\textit{breed next generation}
 $$
 
-\subsubsection{Mutation and Crossover}
+\subsection*{Mutation and Crossover}
 Our crossover implementation is as simple as it gets: take two individuals and calculate the average $x$ and $y$ center positions, the radii, and the intensity. The mutation process takes into account how many generations have been evolved up to that point and uses a step function to determine what the normal distribution's $\mu$ and $\sigma$ should be. For each attribute $a$ of the circle to mutate:
+
 \begin{enumerate}
 \item Generate a Gaussian random number $p$ using $\mu, \sigma$
 \item Determine a proportional shift $\tilde{a} = p*a$
@@ -95,7 +96,8 @@ The distribution deviation $\sigma$ changes depending on generation count. For t
 
 We also implemented another mutation strategy for a specific case to be discussed later. This takes in a circle and explicitly mutates each attribute in both an increasing \textit{and} decreasing direction.
 
-\subsubsection{Selection and Generation}
+
+\subsection*{Selection and Generation}
 The approach we've taken to population evolution is a bit more complicated than ranked selection and breeding. 
 
 There are four distinct categories for selection:
@@ -121,8 +123,8 @@ The next selection step is random chance, where any member could breed with any 
 
 Since this is the best we do not wish to stray too far from where we currently are, therefore for positive mutations we see $\mu = 0.1$ and $\sigma = 0.1$, while for negative mutations we see $\mu = -0.1$ and $\sigma = 0.1$. This slightly offsets the normal distribution so a small change is effected to each of the six resulting offspring.
 
-\subsection{Results}
-The algorithm described in the above sections functioned stupendously well. In initial testing it became clear even with small circle counts that the algorithm was converging quickly to reconstructions that contained core structural information of the original images. Figure \ref{fig:darwin_0050} shows this early tendency towards low-frequency, high-gain information clearly. As circle counts increased high-frequency information started appearing, with massive circle counts almost identical to the original image. Over a dozen examples of high-count reconstructions can be found in Appendix A. 
+\section*{Results}
+The algorithm described in the above section*s functioned stupendously well. In initial testing it became clear even with small circle counts that the algorithm was converging quickly to reconstructions that contained core structural information of the original images. Figure \ref{fig:darwin_0050} shows this early tendency towards low-frequency, high-gain information clearly. As circle counts increased high-frequency information started appearing, with massive circle counts almost identical to the original image. Over a dozen examples of high-count reconstructions can be found in Appendix A. 
 \begin{figure}[H]
 \centering
 \noindent\includegraphics[width=0.4\textwidth]{../results/darwin/darwin_0050}
@@ -130,53 +132,146 @@ The algorithm described in the above sections functioned stupendously well. In i
 \caption{A portrait of Charles Darwin with 50 and 4000 circles, respectively. }
 \label{fig:darwin_0050}
 \end{figure}
+
 There are some cases where the algorithm does not perform as well as expected. One case is that of cartoon characters: large swaths of empty space punctuated by very sharp, thin lines and hard gradients. Such information proved difficult for circles to represent using low circle counts. However, given a truly massive number of elements and time to work with, the algorithm did manage to reconstruct drawings satisfactorily. Figure \ref{fig:hobbes_0200} demonstrates this behavior well. 
 \begin{figure}[H]
 \centering
 \noindent\includegraphics[width=0.4\textwidth]{../results/cartoons/hobbes_0200}
 \noindent\includegraphics[width=0.4\textwidth]{../results/mickey/mickey_4000}
-\caption{A portrait of Charles Darwin with 200 and 4000 circles, respectively. }
+\caption{Cartoon/comic drawings reconstructed. }
 \label{fig:hobbes_0200}
 \end{figure}
-Curiously our initial expectations about larger populations leading to faster convergence were incorrect. 
 
-
-\subsection{Conclusions}
-Perhaps unsurprisingly, we discovered that robust genetic algorithms work well to (eventually) reproduce images from primitive shapes. While our implementation focused exclusively on reconstruction of grayscale images with 
-
+Curiously, our initial expectations about larger populations leading to faster convergence were incorrect. In testing (shown in Figure \ref{fig:lenna_pop}) we found that there was little practical value to a population size greater than 25. Increasing population size does appear to increase the prevalence of large circles, and the circles seem to be more "correctly" placed on average. 
 \begin{figure}[H]
 \centering
-\noindent\includegraphics[width=0.65\textwidth]{../images/jmcgough}
-\caption{The Persistence of Memory}
-\label{fig:jmcgough}
+\noindent\includegraphics[width=\textwidth/6]{../results/lenna/lenna_pop10}
+\noindent\includegraphics[width=\textwidth/6]{../results/lenna/lenna_pop20}
+\noindent\includegraphics[width=\textwidth/6]{../results/lenna/lenna_pop28}
+\noindent\includegraphics[width=\textwidth/6]{../results/lenna/lenna_pop35}
+\noindent\includegraphics[width=\textwidth/6]{../results/lenna/lenna_pop50}
+\caption{Images generated with 1000 circles, 100 generations, and population size = (10, 20, 28, 35, 50). }
+\label{fig:lenna_pop}
 \end{figure}
 
+Being astute students, we also varied generation count to see what effect it would have on reconstruction quality. Holding at a constant population size of 20 individuals and varying the generation count from 25 to 200 we really didn't see drastic changes. Figure \ref{fig:lenna_gen} shows these results. There is an increase in feature clarity as generation count increases, but one would be hard-pressed to find a fundamental difference between the images generated with 50 generations and 200 generations. 
 \begin{figure}[H]
 \centering
-\noindent\includegraphics[width=0.65\textwidth]{../results/jmcgough/jmcgough_0050.png}
-\caption{\textit{The Persistence of Memory} with 50 circles}
-\label{fig:jmcgough_0050}
+\noindent\includegraphics[width=\textwidth/6]{../results/lenna/lenna_gen25}
+\noindent\includegraphics[width=\textwidth/6]{../results/lenna/lenna_gen50}
+\noindent\includegraphics[width=\textwidth/6]{../results/lenna/lenna_gen75}
+\noindent\includegraphics[width=\textwidth/6]{../results/lenna/lenna_gen100}
+\noindent\includegraphics[width=\textwidth/6]{../results/lenna/lenna_gen200}
+\caption{Images generated with 1000 circles, population of 20, and generation count = (25, 50, 75, 100, 200). }
+\label{fig:lenna_gen}
 \end{figure}
 
+With the above testing we can arrive at a practical optimization of 25-30 individuals, 50 generations. Using 28 individuals and 50 generations produced the below image (Figure \ref{fig:lenna_final}) in 7 minutes, 25 seconds on an i7 2600k CPU from 2011. 
 \begin{figure}[H]
 \centering
-\noindent\includegraphics[width=0.65\textwidth]{../results/jmcgough/jmcgough_0100.png}
-\caption{\textit{The Persistence of Memory} with 100 circles}
-\label{fig:jmcgough_0100}
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/lenna/lenna_pop28_gen50}
+\caption{Roughly-optimized generation of 1000 circles, population size = 28, generations = 50.}
+\label{fig:lenna_final}
 \end{figure}
 
-\begin{figure}[H]
-\centering
-\noindent\includegraphics[width=0.65\textwidth]{../results/jmcgough/jmcgough_0200.png}
-\caption{\textit{The Persistence of Memory} with 200 circles}
-\label{fig:jmcgough_0200}
-\end{figure}
+
+
+\section*{Conclusions}
+Perhaps unsurprisingly, we discovered that robust genetic algorithms work well to (eventually) reproduce images from primitive shapes. While our implementation focused exclusively on reconstruction of grayscale images with agglomerated circles, the core functionality could be extended to RGB images and \textit{any} geometric primitive. This project has handily showed that evolutionary algorithms are very capable tools (when corralled correctly) for solving problems without a hard mathematical definition. 
+
 
 
 
 \newpage
-\subsection{Code}
-\subsubsection{Best Circle}
+\section*{Appendix A: Reconstructed Images}
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/adam/adam_4000}
+\end{figure}
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/ansel/tetons_1500}
+\end{figure}
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/dali/dali_4000}
+\end{figure}
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/darwin/darwin_4000}
+\end{figure}
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/dali/dali_4000}
+\end{figure}
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/fruit/fruit2_1500}
+\end{figure}
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/ironman/ironman_4000}
+\end{figure}
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/jmcgough/jmcgough_4000}
+\end{figure}
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/k/k_4000}
+\end{figure}
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/lenna/lenna_4000}
+\end{figure}
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/mandlebrot/mandlebrot_4000}
+\end{figure}
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/mickey/mickey_4000}
+\end{figure}
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/mona_lisa/mona_lisa_4000}
+\end{figure}
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/old_glory/old_glory_0200}
+\end{figure}
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/stargate/stargate_4000}
+\end{figure}
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/stimpy/stimpy_4000}
+\end{figure}
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/ufop/ufop_4000}
+\end{figure}
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/wave/wave_1500}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+\section*{Appendix B: Code}
 \begin{lstlisting}
 import numpy
 \end{lstlisting}
