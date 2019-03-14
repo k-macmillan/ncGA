@@ -76,9 +76,10 @@ Our crossover implementation is as simple as it gets: take two individuals and c
 \end{enumerate}
 The distribution deviation $\sigma$ changes depending on generation count. For the first three generations $\sigma = 0.3$, for generations in the first half after the first three $\sigma = 0.2$, and for the last half of the generations $\sigma = 0.1$. This has the effect of tapering off the randomness of mutation variations as generation count increases and, hopefully, the individuals home in on local maxima. Simulated annealing can work alongside GAs!
 
-We also implemented another mutation strategy for a specific case. 
+We also implemented another mutation strategy for a specific case to be discussed later. This takes in a circle and explicitly mutates each attribute in both an increasing \textit{and} decreasing direction.
 
-\subsubsection{Selection}
+\subsubsection{Selection and Generation}
+The approach we've taken to population evolution is a bit more complicated than ranked selection and breeding. Given a population ranked by fitness we select a top proportion (the "royalty") and have them interbreed Hapsburg-style to generate a collection of new individuals equal in size to the input "royalty". These are crossed-over, mutated, and added to the new population. Then, (if population size > six) we take the most fit individual, who is also royalty, and mutate it using the special-case mutation described above to generate six new individuals. These are added to the new population. The remaining slots in the new population are filled with randomly-generated individuals. Combining random individual generation, elitist interbreeding, and several mutations of the most-fit individual into the next generation leads to a very robust population which captures the highlights of the previous population without stepping on new innovation.  
 
 \subsection{Results}
 
