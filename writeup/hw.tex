@@ -107,6 +107,7 @@ The algorithm described in the above section*s functioned stupendously well. In 
 \caption{A portrait of Charles Darwin with 50 and 4000 circles, respectively. }
 \label{fig:darwin_0050}
 \end{figure}
+
 There are some cases where the algorithm does not perform as well as expected. One case is that of cartoon characters: large swaths of empty space punctuated by very sharp, thin lines and hard gradients. Such information proved difficult for circles to represent using low circle counts. However, given a truly massive number of elements and time to work with, the algorithm did manage to reconstruct drawings satisfactorily. Figure \ref{fig:hobbes_0200} demonstrates this behavior well. 
 \begin{figure}[H]
 \centering
@@ -115,7 +116,40 @@ There are some cases where the algorithm does not perform as well as expected. O
 \caption{Cartoon/comic drawings reconstructed. }
 \label{fig:hobbes_0200}
 \end{figure}
-Curiously our initial expectations about larger populations leading to faster convergence were incorrect. 
+
+Curiously, our initial expectations about larger populations leading to faster convergence were incorrect. In testing (shown in Figure \ref{fig:lenna_pop}) we found that there was little practical value to a population size greater than 25. Increasing population size does appear to increase the prevalence of large circles, and the circles seem to be more "correctly" placed on average. 
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=\textwidth/6]{../results/lenna/lenna_pop10}
+\noindent\includegraphics[width=\textwidth/6]{../results/lenna/lenna_pop20}
+\noindent\includegraphics[width=\textwidth/6]{../results/lenna/lenna_pop28}
+\noindent\includegraphics[width=\textwidth/6]{../results/lenna/lenna_pop35}
+\noindent\includegraphics[width=\textwidth/6]{../results/lenna/lenna_pop50}
+\caption{Images generated with 1000 circles, 100 generations, and population size = (10, 20, 28, 35, 50). }
+\label{fig:lenna_pop}
+\end{figure}
+
+Being astute students, we also varied generation count to see what effect it would have on reconstruction quality. Holding at a constant population size of 20 individuals and varying the generation count from 25 to 200 we really didn't see drastic changes. Figure \ref{fig:lenna_gen} shows these results. There is an increase in feature clarity as generation count increases, but one would be hard-pressed to find a fundamental difference between the images generated with 50 generations and 200 generations. 
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=\textwidth/6]{../results/lenna/lenna_gen25}
+\noindent\includegraphics[width=\textwidth/6]{../results/lenna/lenna_gen50}
+\noindent\includegraphics[width=\textwidth/6]{../results/lenna/lenna_gen75}
+\noindent\includegraphics[width=\textwidth/6]{../results/lenna/lenna_gen100}
+\noindent\includegraphics[width=\textwidth/6]{../results/lenna/lenna_gen200}
+\caption{Images generated with 1000 circles, population of 20, and generation count = (25, 50, 75, 100, 200). }
+\label{fig:lenna_gen}
+\end{figure}
+
+With the above testing we can arrive at a practical optimization of 25-30 individuals, 50 generations. Using 28 individuals and 50 generations produced the below image (Figure \ref{fig:lenna_final}) in 7 minutes, 25 seconds on an i7 2600k CPU from 2011. 
+\begin{figure}[H]
+\centering
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/lenna/lenna_pop28_gen50}
+\caption{Roughly-optimized generation of 1000 circles, population size = 28, generations = 50.}
+\label{fig:lenna_final}
+\end{figure}
+
 
 
 \section*{Conclusions}
@@ -162,10 +196,10 @@ Perhaps unsurprisingly, we discovered that robust genetic algorithms work well t
 \centering
 \noindent\includegraphics[width=0.75\textwidth]{../results/k/k_4000}
 \end{figure}
-%\begin{figure}[H]
-%\centering
-%\noindent\includegraphics[width=0.75\textwidth]{../results/lenna/lenna_1500}
-%\end{figure}
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/lenna/lenna_4000}
+\end{figure}
 \begin{figure}[H]
 \centering
 \noindent\includegraphics[width=0.75\textwidth]{../results/mandlebrot/mandlebrot_4000}
