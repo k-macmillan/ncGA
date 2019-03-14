@@ -3,6 +3,7 @@
 \usepackage[margin=0.5in]{geometry}
 \usepackage[cache=false]{minted}
 \usepackage{etoolbox}
+\usepackage{hyperref}
 \AtBeginEnvironment{minted}{\singlespacing%
     \fontsize{10}{10}\selectfont}
 \usepackage[final]{pdfpages}
@@ -92,7 +93,7 @@ Our crossover implementation is as simple as it gets: take two individuals and c
 \item Calculate the new, mutated value $a^{\prime} = a + \tilde{a}$
 \item Set $a = a^{\prime}$ 
 \end{enumerate}
-The distribution deviation $\sigma$ changes depending on generation count. For the first three generations $\sigma = 0.3$, for generations in the first half after the first three $\sigma = 0.2$, and for the last half of the generations $\sigma = 0.1$. This has the effect of tapering off the randomness of mutation variations as generation count increases and, hopefully, the individuals home in on local maxima. Simulated annealing can work alongside GAs!
+The distribution deviation $\sigma$ changes depending on generation count. For the first three generations $\sigma = 0.3$, for generations in the first half after the first three $\sigma = 0.2$, and for the last half of the generations $\sigma = 0.1$. This has the effect of tapering off the magnitude of mutation variations as generation count increases and, hopefully, the individuals home in on local maxima. Simulated annealing can work alongside GAs!
 
 We also implemented another mutation strategy for a specific case to be discussed later. This takes in a circle and explicitly mutates each attribute in both an increasing \textit{and} decreasing direction.
 
@@ -121,7 +122,7 @@ The next selection step is random chance, where any member could breed with any 
     \item Intensity
 \end{itemize}
 
-Since this is the best we do not wish to stray too far from where we currently are, therefore for positive mutations we see $\mu = 0.1$ and $\sigma = 0.1$, while for negative mutations we see $\mu = -0.1$ and $\sigma = 0.1$. This slightly offsets the normal distribution so a small change is effected to each of the six resulting offspring.
+Since this is the best we do not wish to stray too far from where we currently are, therefore for positive mutations we see $\mu = 0.1$ and $\sigma = 0.1$, while for negative mutations we see $\mu = -0.1$ and $\sigma = 0.1$. This slightly offsets the normal distribution so a small change is affected to each of the six resulting offspring.
 
 \section*{Results}
 The algorithm described in the above section*s functioned stupendously well. In initial testing it became clear even with small circle counts that the algorithm was converging quickly to reconstructions that contained core structural information of the original images. Figure \ref{fig:darwin_0050} shows this early tendency towards low-frequency, high-gain information clearly. As circle counts increased high-frequency information started appearing, with massive circle counts almost identical to the original image. Over a dozen examples of high-count reconstructions can be found in Appendix A. 
