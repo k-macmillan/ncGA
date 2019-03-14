@@ -104,7 +104,16 @@ class GA():
         # self.max_image = 255 * self.width * self.height
         self.art = np.zeros((self.height, self.width), dtype=np.float32)
         self.max_radius = self.max_dim / 2.0
-        self.pixel_modifier = np.float32(0.00001)
+        self.SetPixelModifier()
+
+    def SetPixelModifier(self):
+    	pixels = self.height * self.width
+    	i = 0
+    	while pixels > 0.0
+    		pixels /= 10.0
+    		i += 1
+
+    	self.pixel_modifier = np.float32(1.0 / 10**i)
 
 # 1
     def InitializePop(self):
