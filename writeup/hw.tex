@@ -17,7 +17,7 @@
 
 \begin{figure}[H]
 \centering
-\noindent\includegraphics[width=0.75\textwidth]{../results/mandlebrot/mandlebrot_raw_4000}
+\noindent\includegraphics[width=0.75\textwidth]{../results/mandlebrot/mandlebrot_raw_wrong_4000}
 \caption{Mandlebrot Set at 1920x1440 resolution}
 \label{fig:mandlebrot_raw}
 \end{figure}
@@ -25,10 +25,11 @@
 Having now had a half-semester to digest and process information about nature-inspired computing approaches like simulated annealing and various implementations of evolutionary algorithms, Homework \#2 challenged us to tackle a nontrivial task: image reproduction. Our official bidding was to use an evolutionary algorithm (with our own quirks)  to evolve the closest approximation of a given image. Our implementation focused on a very robust generation-to-generation reproduction system using both crossover and point mutations. This approach yielded remarkable results. 
 \\ \\
 \textbf{Note: }The repository for this paper can be found \href{https://github.com/macattackftw/ncGA}{here}. 
-The \verb|README.md| contains a gif of our solution in action and a full suite of test results can be seen in the \verb|results| folder. A selection of these results can also be seen in Appendix A. 
+The \verb|README.md| contains several animations of our solution in action and a full suite of test results can be seen in the \verb|results| folder. A selection of these results can also be seen in Appendix A. 
 
 %\section*{} %%  This will generate a numbered problem header.
 
+\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Initial Approach and Encoding}
 Before programming could begin we needed to know \textbf{1)} the language with which we would write our project, and \textbf{2)} the exact algorithm we were implementing. Python was the obvious choice for quickly iterating and testing. Algorithm development started at the discussion of how exactly we were going to generate images. After some back and forth we decided to build our image reconstructions purely in grayscale, and with layered circles. One ``epoch'' would be completed to generate an optimal circle. Each epoch would consist of a \textit{uniform randomly} generated population which was to be evolved over a set number of generations, with the most fit individual pulled and added to the reconstruction. While computationally intensive this one-at-a-time approach was expected to be robust and consistently convergent. 
