@@ -1,6 +1,5 @@
 import numpy as np
 import imageio
-import matplotlib.pyplot as plt
 from time import sleep, perf_counter
 # import cProfile
 
@@ -29,7 +28,7 @@ class GA():
             self.InitializePop()    # 1
             self.EvaluatePop()
             if not self.headless:
-                self.Draw()
+                
 
             for self.gen in range(self.gens):
                 self.Breed()        # 2
@@ -39,11 +38,9 @@ class GA():
             # For each epoch draw only if headless. Print on 50/100/200
             if self.epoch == 0:
                 if self.headless:
-                    self.Draw()
+                    
             elif self.epoch == 49:
-                if self.headless:
-                    self.Draw()
-                plt.savefig('results/' + filename + '_0050.png')
+                print('Circle: ', self.epoch + 1)
                 name = 'results/' + filename + '_raw_' + str(self.epoch + 1) + '.png'
                 art = np.copy(self.art)
                 art[art > 255] = 255
@@ -51,33 +48,26 @@ class GA():
                 art = np.uint8(art)
                 imageio.imwrite(name, art[:, :])
             elif self.epoch == 99:
-                if self.headless:
-                    self.Draw()
-                plt.savefig('results/' + filename + '_0100.png')
+                print('Circle: ', self.epoch + 1)
+                    
             elif self.epoch == 199:
-                if self.headless:
-                    self.Draw()
-                plt.savefig('results/' + filename + '_0200.png')
+                print('Circle: ', self.epoch + 1)
+                    
             elif self.epoch == 499:
-                if self.headless:
-                    self.Draw()
-                plt.savefig('results/' + filename + '_0500.png')
+                print('Circle: ', self.epoch + 1)
+                    
             elif self.epoch == 999:
-                if self.headless:
-                    self.Draw()
-                plt.savefig('results/' + filename + '_1000.png')
+                print('Circle: ', self.epoch + 1)
+                    
             elif self.epoch == 1999:
-                if self.headless:
-                    self.Draw()
-                plt.savefig('results/' + filename + '_2000.png')
+                print('Circle: ', self.epoch + 1)
+                    
             elif self.epoch == 2999:
-                if self.headless:
-                    self.Draw()
-                plt.savefig('results/' + filename + '_3000.png')
+                print('Circle: ', self.epoch + 1)
+                    
             elif self.epoch == 3999:
-                if self.headless:
-                    self.Draw()
-                plt.savefig('results/' + filename + '_4000.png')
+                print('Circle: ', self.epoch + 1)
+                    
                 name = 'results/' + filename + '_raw_' + str(self.epoch + 1) + '.png'
                 art = np.copy(self.art)
                 art[art > 255] = 255
@@ -89,7 +79,7 @@ class GA():
         # When done display final image
         if not self.headless:
             self.epoch -= 1
-            self.Draw()
+            
             sleep(10)
 
 
@@ -305,33 +295,9 @@ class GA():
         circle_value = mask * individual['intensity']
         self.art = self.art + circle_value
 
-    def Draw(self):
-        """Draw the output to the screen"""
-        if not self.headless:
-            print('Drawing circle: ', self.epoch + 1)
-        if self.epoch == 0:
-            plt.clf()
-            fig, self.ax = plt.subplots(1, 2)
-            plt.close(fig=1)
-            self.ax[0].axis('off')
-            self.ax[1].axis('off')
-            plt.ion()
-        title = 'Circle: ' + str(self.epoch + 1)
-
-        if not self.headless:
-            plt.show()
-        self.ax[0].imshow(self.art, cmap='gray', vmin = 0, vmax = 255)
-        self.ax[1].imshow(self.image, cmap='gray', vmin = 0, vmax = 255)
-        self.ax[0].set_title(title)
-        self.ax[1].set_title('Original Image')
-        if not self.headless:
-            plt.pause(.001)
-
-
 
 if __name__ == '__main__':
     ga = GA(headless=True)
     # cProfile.run('ga.Run("images/test3.png")', sort="time")
     ga.Run('images/old_glory.png')
-    plt.ioff()
 
