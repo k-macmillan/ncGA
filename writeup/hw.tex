@@ -190,7 +190,7 @@ With the above testing we can arrive at a practical optimization of 25-30 indivi
 
 Learning that the population size can be relatively small we tested the limits of what we could approximate utilizing only 4,000 cirlces. We ran an image of the Mandlebrot Set with 2,764,800 pixels (1920 x 1440 resolution) and an image of Old Glory with 3,368,160 pixels (2339 x 1440 resolution) as can be seen in Figures \ref{fig:mandlebrot} and \ref{fig:old_glory} respectively. The resulting images follow the ``across the room`` effect that we noticed in the earlier runs. This effect was first noticed when observing thumbnails for the images. The thumbnails of the generated images appear very similar to the original image but when you open the generated image there is a very clear distinction. This effect can be seen between Figures \ref{fig:mandlebrot} and \ref{fig:mandlebrot_raw}.
 
-% The stack of circles we identified as \texttt{self.art}. We knew it was possible for the image to have values outside of the \texttt{[0, 255]} range since we allowed for circles to just layer over the existing art. This freedom is what allowed for the image to have darkened areas
+The stack of circles we identified as \texttt{self.art}. We knew it was possible for the image to have values outside of the \texttt{[0, 255]} range since we allowed for circles to just layer over the existing art. This freedom is what allowed for the image to have darkened areas. It would have been possible to test if capping per epoch (circle drawn) would have an impact on the overall art but we did not have time to test that. You can see the difference between what our art was and what we saved by looking at Figures \ref{fig:mandlebrot_raw_wrong} and \ref{fig:mandlebrot_raw} respectively. The range on Figure \ref{fig:mandlebrot_raw_wrong} was \texttt{(-250.501, 383.776)}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Conclusions}
@@ -297,9 +297,16 @@ Our results showed this to be a very effective means of approximating an image. 
 
 \begin{figure}[H]
 \centering
-\noindent\includegraphics[width=0.75\textwidth]{../results/mandlebrot/mandlebrot_raw_wrong_4000}
+\noindent\includegraphics[width=0.75\textwidth]{../results/mandlebrot/mandlebrot_raw_4000}
 \caption{Mandlebrot Set at full resolution}
 \label{fig:mandlebrot_raw}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/mandlebrot/mandlebrot_raw_wrong_4000}
+\caption{Mandlebrot Set at full resolution}
+\label{fig:mandlebrot_raw_wrong}
 \end{figure}
 
 \begin{figure}[H]
