@@ -19,6 +19,7 @@
 \centering
 \noindent\includegraphics[width=0.75\textwidth]{../results/mandlebrot/mandlebrot_raw_4000}
 \caption{Mandlebrot Set at 1920x1440 resolution}
+\label{fig:mandlebrot_raw}
 \end{figure}
 
 Having now had a half-semester to digest and process information about nature-inspired computing approaches like simulated annealing and various implementations of evolutionary algorithms, Homework \#2 challenged us to tackle a nontrivial task: image reproduction. Our official bidding was to use an evolutionary algorithm (with our own quirks)  to evolve the closest approximation of a given image. Our implementation focused on a very robust generation-to-generation reproduction system using both crossover and point mutations. This approach yielded remarkable results. 
@@ -133,6 +134,7 @@ The next selection step is random chance, where any member could breed with any 
 
 Since this is the best we do not wish to stray too far from where we currently are, therefore for positive mutations we see $\mu = 0.1$ and $\sigma = 0.1$, while for negative mutations we see $\mu = -0.1$ and $\sigma = 0.1$. This slightly offsets the normal distribution so a small change is effected to each of the six resulting offspring.
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Results}
 The algorithm described in the above sections functioned stupendously well. In initial testing it became clear even with small circle counts that the algorithm was converging quickly to reconstructions that contained core structural information of the original images. Figure \ref{fig:darwin_0050} shows this early tendency towards low-frequency, high-gain information clearly. As circle counts increased high-frequency information started appearing, with massive circle counts almost identical to the original image. Over a dozen examples of high-count reconstructions can be found in Appendix A. 
@@ -186,12 +188,17 @@ With the above testing we can arrive at a practical optimization of 25-30 indivi
 \label{fig:lenna_final}
 \end{figure}
 
+Learning that the population size can be relatively small we tested the limits of what we could approximate utilizing only 4,000 cirlces. We ran an image of the Mandlebrot Set with 2,764,800 pixels (1920 x 1440 resolution) and an image of Old Glory with 3,368,160 pixels (2339 x 1440 resolution) as can be seen in Figures \ref{fig:mandlebrot} and \ref{fig:old_glory} respectively. The resulting images follow the ``across the room`` effect that we noticed in the earlier runs. This effect was first noticed when observing thumbnails for the images. The thumbnails of the generated images appear very similar to the original image but when you open the generated image there is a very clear distinction. This effect can be seen between Figures \ref{fig:mandlebrot} and \ref{fig:mandlebrot_raw}.
+
+% The stack of circles we identified as \texttt{self.art}. We knew it was possible for the image to have values outside of the \texttt{[0, 255]} range since we allowed for circles to just layer over the existing art. This freedom is what allowed for the image to have darkened areas
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Conclusions}
-Perhaps unsurprisingly, we discovered that robust genetic algorithms work well to (eventually) reproduce images from primitive shapes. While our implementation focused exclusively on reconstruction of grayscale images with agglomerated circles, the core functionality could be extended to RGB images and \textit{any} geometric primitive. This project has handily showed that evolutionary algorithms are very capable tools (when corralled correctly) for solving problems without a hard mathematical definition. 
+Perhaps unsurprisingly, we discovered that robust genetic algorithms work well to (eventually) reproduce images from primitive shapes. The importance of a good fitness function was also very apparent after a couple days working on this project. We spent several days attempting to tune the fitness function and once we tuned it the rest of the algorithm just worked. This project has handily showed that evolutionary algorithms are very capable tools (when corralled correctly) for solving problems without a hard mathematical definition. 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Future Work}
+Our results showed this to be a very effective means of approximating an image. Run times on images is prohibitively long and one approach to rectify that could be implementation of multithreaded or distributed solutions. Another area for exploration is introducing colored circles. We found the algorithm to be extremely robust to fluxuations in population and generation sizes so it is reasonable to assume it would perform well with a slightly larger population and RGB circles. During testing we observed the best and worst fitness for each generation. When generating random numbers we found that depending on the $\sigma$ allowed the fitness tended to converge around a certain generation. Future work could involve a dynamic generation, where it progresses until the change between generations is within $\epsilon$ and then it would move on to the next epoch. Lastly, the methodology is sound, so this should work for \textit{any} geometric shape. Allowing user to decide the geometric shape would be a good expansion on this work.
 
 
 \newpage
@@ -285,16 +292,29 @@ Perhaps unsurprisingly, we discovered that robust genetic algorithms work well t
 \centering
 \noindent\includegraphics[width=0.75\textwidth]{../results/mandlebrot/mandlebrot_4000}
 \caption{Mandlebrot Set at 1920x1440 resolution}
+\label{fig:mandlebrot}
 \end{figure}
 
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/mandlebrot/mandlebrot_raw_4000}
+\caption{Mandlebrot Set at full resolution}
+\label{fig:mandlebrot_raw}
+\end{figure}
 
 \begin{figure}[H]
 \centering
 \noindent\includegraphics[width=0.75\textwidth]{../results/old_glory/old_glory_4000}
 \caption{Old Glory at 2239x1440 resolution}
+\label{fig:old_glory}
 \end{figure}
 
-
+% \begin{figure}[H]
+% \centering
+% \noindent\includegraphics[width=0.75\textwidth]{../results/old_glory/old_glory_raw_4000}
+% \caption{Old Glory at full resolution}
+% \label{fig:old_glory_raw}
+% \end{figure}
 
 
 
