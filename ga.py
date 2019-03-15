@@ -8,20 +8,13 @@ class GA():
     ELITISM = 0.10
     def __init__(self, circles=4000, headless=False):
         self.epoch = 0
-        self.SetPopAttributes()
+        self.pop_size = 10
+        self.gens = 50
         self.circles = circles
         self.center = np.dtype([('x', np.float32), ('y', np.float32)])
         self.genome = np.dtype([('center',self.center), ('radius', np.float32), ('intensity', np.float32) ])
         self.pop = np.zeros((self.pop_size, ), dtype=self.genome)
         self.headless = headless
-
-    def SetPopAttributes(self):
-        if self.epoch < 200:
-            self.pop_size = 200
-            self.gens = 200
-        else:
-            self.pop_size = 10
-            self.gens = 50
 
     def Reset(self):
         self.img_fitness = 0
@@ -33,7 +26,6 @@ class GA():
         self.LoadImage(image)
         self.Reset()
         while self.epoch < self.circles:
-            self.SetPopAttributes()
             self.InitializePop()    # 1
             self.EvaluatePop()
             if not self.headless:
@@ -52,6 +44,12 @@ class GA():
                 if self.headless:
                     self.Draw()
                 plt.savefig('results/' + filename + '_0050.png')
+                name = 'results/' + filename + '_raw_' + str(self.epoch + 1) + '.png'
+                art = np.copy(self.art)
+                art[art > 255] = 255
+                art[art < 0] = 0
+                art = np.uint8(art)
+                imageio.imwrite(name, art[:, :])
             elif self.epoch == 99:
                 if self.headless:
                     self.Draw()
@@ -80,6 +78,12 @@ class GA():
                 if self.headless:
                     self.Draw()
                 plt.savefig('results/' + filename + '_4000.png')
+                name = 'results/' + filename + '_raw_' + str(self.epoch + 1) + '.png'
+                art = np.copy(self.art)
+                art[art > 255] = 255
+                art[art < 0] = 0
+                art = np.uint8(art)
+                imageio.imwrite(name, art[:, :])
             self.epoch += 1
 
         # When done display final image
@@ -328,6 +332,6 @@ class GA():
 if __name__ == '__main__':
     ga = GA(headless=True)
     # cProfile.run('ga.Run("images/test3.png")', sort="time")
-    ga.Run('images/adam.png')
+    ga.Run('images/old_glory.png')
     plt.ioff()
 
