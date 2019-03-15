@@ -8,8 +8,8 @@ class GA():
     ELITISM = 0.10
     def __init__(self, circles=4000, headless=False):
         self.epoch = 0
-        self.pop_size = 10
-        self.gens = 50
+        self.pop_size = 20
+        self.gens = 70
         self.circles = circles
         self.center = np.dtype([('x', np.float32), ('y', np.float32)])
         self.genome = np.dtype([('center',self.center), ('radius', np.float32), ('intensity', np.float32) ])
@@ -25,6 +25,7 @@ class GA():
         filename = image[7:len(image) - 4]
         self.LoadImage(image)
         self.Reset()
+        t0 = perf_counter()
         while self.epoch < self.circles:
             self.InitializePop()    # 1
             self.EvaluatePop()
@@ -37,6 +38,7 @@ class GA():
             # For each epoch draw only if headless. Print on 50/100/200
             if self.epoch % 50 == 0:
                 print('Circle: ', self.epoch)
+                print('Runtime: ', perf_counter() - t0)
             
             if self.epoch == 3999:
                 print('Circle: ', self.epoch + 1)
