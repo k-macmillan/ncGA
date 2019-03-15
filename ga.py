@@ -27,8 +27,6 @@ class GA():
         while self.epoch < self.circles:
             self.InitializePop()    # 1
             self.EvaluatePop()
-            if not self.headless:
-                
 
             for self.gen in range(self.gens):
                 self.Breed()        # 2
@@ -36,10 +34,8 @@ class GA():
             self.UpdateImage()
 
             # For each epoch draw only if headless. Print on 50/100/200
-            if self.epoch == 0:
-                if self.headless:
                     
-            elif self.epoch == 49:
+            if self.epoch == 49:
                 print('Circle: ', self.epoch + 1)
                 name = 'results/' + filename + '_raw_' + str(self.epoch + 1) + '.png'
                 art = np.copy(self.art)
