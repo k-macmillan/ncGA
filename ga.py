@@ -35,34 +35,10 @@ class GA():
             self.UpdateImage()
 
             # For each epoch draw only if headless. Print on 50/100/200
-                    
-            if self.epoch == 49:
-                print('Circle: ', self.epoch + 1)
-                name = 'results/' + filename + '_raw_' + str(self.epoch + 1) + '.png'
-                art = np.copy(self.art)
-                art[art > 255] = 255
-                art[art < 0] = 0
-                art = np.uint8(art)
-                imageio.imwrite(name, art[:, :])
-            elif self.epoch == 99:
-                print('Circle: ', self.epoch + 1)
-                    
-            elif self.epoch == 199:
-                print('Circle: ', self.epoch + 1)
-                    
-            elif self.epoch == 499:
-                print('Circle: ', self.epoch + 1)
-                    
-            elif self.epoch == 999:
-                print('Circle: ', self.epoch + 1)
-                    
-            elif self.epoch == 1999:
-                print('Circle: ', self.epoch + 1)
-                    
-            elif self.epoch == 2999:
-                print('Circle: ', self.epoch + 1)
-                    
-            elif self.epoch == 3999:
+            if self.epoch % 50 == 0:
+                print('Circle: ', self.epoch)
+            
+            if self.epoch == 3999:
                 print('Circle: ', self.epoch + 1)
                     
                 name = 'results/' + filename + '_raw_' + str(self.epoch + 1) + '.png'
@@ -296,7 +272,7 @@ class GA():
 if __name__ == '__main__':
     filepath = sys.argv[1]
     ga = GA(headless=True)
-    if sys.argv[2] is not None:
+    if len(sys.argv) > 2:
         ga.circles = sys.argv[2]
 
     ga.Run(filepath)
