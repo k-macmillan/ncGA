@@ -28,6 +28,7 @@ The \verb|README.md| contains a gif of our solution in action and a full suite o
 
 %\section*{} %%  This will generate a numbered problem header.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Initial Approach and Encoding}
 Before programming could begin we needed to know \textbf{1)} the language with which we would write our project, and \textbf{2)} the exact algorithm we were implementing. Python was the obvious choice for quickly iterating and testing. Algorithm development started at the discussion of how exactly we were going to generate images. After some back and forth we decided to build our image reconstructions purely in grayscale, and with layered circles. One ``epoch'' would be completed to generate an optimal circle. Each epoch would consist of a \textit{uniform randomly} generated population which was to be evolved over a set number of generations, with the most fit individual pulled and added to the reconstruction. While computationally intensive this one-at-a-time approach was expected to be robust and consistently convergent. 
 \\
@@ -45,6 +46,7 @@ genome = np.dtype([('center', self.center), ('radius', np.float32), ('intensity'
 \end{minted}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Measuring Individual Fitness}
 Given a circle to be placed on the stack of circles, how do we determine how "fit" this individual is relative to any other circle? This question plagued us for days. Unlike a simple mathematical function one can't just plug a circle into an image and get a numeric out indicating progress. The circle's fitness depends on not only the information confined to its bounds, but also how the circle fits into the larger context of the image. Our initial approaches to generating a fitness function proved fruitless; one simply filled the image as quickly as possible with white, and another would produce results only slightly better than random circle placement. 
 
@@ -80,6 +82,7 @@ def Fitness(self, individual):
 
 This fitness function tracks how well the circle improved its local area relative to its size. Once we had it in place, the stars aligned and things converged!
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Evolving a New Circle}
 Our process of generating and selecting a new circle is somewhat involved. Each final circle is the product of a full evolutionary run with its own population. We followed a fairly standard approach:
 
@@ -130,8 +133,9 @@ The next selection step is random chance, where any member could breed with any 
 
 Since this is the best we do not wish to stray too far from where we currently are, therefore for positive mutations we see $\mu = 0.1$ and $\sigma = 0.1$, while for negative mutations we see $\mu = -0.1$ and $\sigma = 0.1$. This slightly offsets the normal distribution so a small change is effected to each of the six resulting offspring.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Results}
-The algorithm described in the above section*s functioned stupendously well. In initial testing it became clear even with small circle counts that the algorithm was converging quickly to reconstructions that contained core structural information of the original images. Figure \ref{fig:darwin_0050} shows this early tendency towards low-frequency, high-gain information clearly. As circle counts increased high-frequency information started appearing, with massive circle counts almost identical to the original image. Over a dozen examples of high-count reconstructions can be found in Appendix A. 
+The algorithm described in the above sections functioned stupendously well. In initial testing it became clear even with small circle counts that the algorithm was converging quickly to reconstructions that contained core structural information of the original images. Figure \ref{fig:darwin_0050} shows this early tendency towards low-frequency, high-gain information clearly. As circle counts increased high-frequency information started appearing, with massive circle counts almost identical to the original image. Over a dozen examples of high-count reconstructions can be found in Appendix A. 
 \begin{figure}[H]
 \centering
 \noindent\includegraphics[width=0.4\textwidth]{../results/darwin/darwin_0050}
@@ -183,7 +187,7 @@ With the above testing we can arrive at a practical optimization of 25-30 indivi
 \end{figure}
 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Conclusions}
 Perhaps unsurprisingly, we discovered that robust genetic algorithms work well to (eventually) reproduce images from primitive shapes. While our implementation focused exclusively on reconstruction of grayscale images with agglomerated circles, the core functionality could be extended to RGB images and \textit{any} geometric primitive. This project has handily showed that evolutionary algorithms are very capable tools (when corralled correctly) for solving problems without a hard mathematical definition. 
 
@@ -191,6 +195,7 @@ Perhaps unsurprisingly, we discovered that robust genetic algorithms work well t
 
 
 \newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Appendix A: Reconstructed Images}
 
 \subsection*{Low Resolution}
@@ -198,61 +203,79 @@ Perhaps unsurprisingly, we discovered that robust genetic algorithms work well t
 \centering
 \noindent\includegraphics[width=0.75\textwidth]{../results/adam/adam_4000}
 \end{figure}
-\begin{figure}[H]
-\centering
-\noindent\includegraphics[width=0.75\textwidth]{../results/ansel/tetons_1500}
-\end{figure}
+
 \begin{figure}[H]
 \centering
 \noindent\includegraphics[width=0.75\textwidth]{../results/dali/dali_4000}
 \end{figure}
+
 \begin{figure}[H]
 \centering
 \noindent\includegraphics[width=0.75\textwidth]{../results/darwin/darwin_4000}
 \end{figure}
-\begin{figure}[H]
-\centering
-\noindent\includegraphics[width=0.75\textwidth]{../results/fruit/fruit2_1500}
-\end{figure}
+
 \begin{figure}[H]
 \centering
 \noindent\includegraphics[width=0.75\textwidth]{../results/ironman/ironman_4000}
 \end{figure}
+
 \begin{figure}[H]
 \centering
 \noindent\includegraphics[width=0.75\textwidth]{../results/jmcgough/jmcgough_4000}
 \end{figure}
+
 \begin{figure}[H]
 \centering
 \noindent\includegraphics[width=0.75\textwidth]{../results/k/k_4000}
 \end{figure}
-\begin{figure}[H]
-\centering
-\noindent\includegraphics[width=0.75\textwidth]{../results/lenna/lenna_4000}
-\end{figure}
+
 \begin{figure}[H]
 \centering
 \noindent\includegraphics[width=0.75\textwidth]{../results/mickey/mickey_4000}
 \end{figure}
+
 \begin{figure}[H]
 \centering
 \noindent\includegraphics[width=0.75\textwidth]{../results/mona_lisa/mona_lisa_4000}
 \end{figure}
+
 \begin{figure}[H]
 \centering
 \noindent\includegraphics[width=0.75\textwidth]{../results/stargate/stargate_4000}
 \end{figure}
+
 \begin{figure}[H]
 \centering
 \noindent\includegraphics[width=0.75\textwidth]{../results/stimpy/stimpy_4000}
 \end{figure}
+
 \begin{figure}[H]
 \centering
 \noindent\includegraphics[width=0.75\textwidth]{../results/ufop/ufop_4000}
 \end{figure}
+
+
+
+\newpage
+\subsection*{Medium Resolution}
 \begin{figure}[H]
 \centering
 \noindent\includegraphics[width=0.75\textwidth]{../results/wave/wave_1500}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/lenna/lenna_4000}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/fruit/fruit2_1500}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.75\textwidth]{../results/ansel/tetons_1500}
 \end{figure}
 
 
