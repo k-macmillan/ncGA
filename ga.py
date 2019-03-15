@@ -1,7 +1,8 @@
 import numpy as np
 import imageio
 from time import sleep, perf_counter
-# import cProfile
+import sys
+
 
 class GA():
     ELITISM = 0.10
@@ -293,7 +294,10 @@ class GA():
 
 
 if __name__ == '__main__':
+    filepath = sys.argv[1]
     ga = GA(headless=True)
-    # cProfile.run('ga.Run("images/test3.png")', sort="time")
-    ga.Run('images/old_glory.png')
+    if sys.argv[2] is not None:
+        ga.circles = sys.argv[2]
+
+    ga.Run(filepath)
 
