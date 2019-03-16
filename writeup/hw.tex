@@ -91,8 +91,9 @@ Our process of generating and selecting a new circle is somewhat involved. Each 
 $$
 \textit{initialize population}
 \rightarrow\textit{evaluate fitness}
-\rightarrow\textit{crossover/mutate}
-\rightarrow\textit{breed next generation}
+\rightarrow loop(
+\textit{crossover/mutate}
+\rightarrow\textit{evaluate fitness})
 $$
 
 \subsection*{Mutation and Crossover}
@@ -104,7 +105,7 @@ Our crossover implementation is as simple as it gets: take two individuals and c
 \item Calculate the new, mutated value $a^{\prime} = a + \tilde{a}$
 \item Set $a = a^{\prime}$ 
 \end{enumerate}
-The distribution deviation $\sigma$ changes depending on generation count. For the first three generations $\sigma = 0.3$, for generations in the first half after the first three $\sigma = 0.2$, and for the last half of the generations $\sigma = 0.1$. This has the effect of tapering off the magnitude of mutation variations as generation count increases and, hopefully, the individuals home in on local maxima. Simulated annealing can work alongside GAs!
+The distribution deviation $\sigma$ changes depending on generation count. For the first three generations $\sigma = 0.3$, for generations in the first half after the first three $\sigma = 0.2$, and for the last half of the generations $\sigma = 0.1$. This has the effect of tapering off the magnitude of mutation variations as generation count increases and, hopefully, the individuals home in on local maxima. Simmulated annealing can work alongside GAs, and we took inspiration from it. We wanted a lot of variety at the start and then for variety to dwindle. The step function for determining $\sigma$ served to accomplish that.
 
 We also implemented another mutation strategy for a specific case to be discussed later. This takes in a circle and explicitly mutates each attribute in both an increasing \textit{and} decreasing direction.
 
