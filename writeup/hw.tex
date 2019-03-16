@@ -17,7 +17,7 @@
 
 \begin{figure}[H]
 \centering
-\noindent\includegraphics[width=0.75\textwidth]{../results/mandlebrot/mandlebrot_raw_wrong_4000}
+\noindent\includegraphics[width=0.75\textwidth]{../results/mandlebrot/mandlebrot_raw_4000}
 \caption{Mandlebrot Set at 1920x1440 resolution}
 \label{fig:mandlebrot_raw}
 \end{figure}
@@ -416,7 +416,7 @@ class GA():
                 self.EvaluatePop()
             self.UpdateImage()
 
-            # For each epoch draw only if headless. Print on 50/100/200
+            # For each epoch only draw on 50/100/200/500/1000/2000/3000/4000
             if self.epoch == 0:
                 if self.headless:
                     self.Draw()
@@ -620,6 +620,7 @@ class GA():
             rhs = np.random.random_integers(low=0, high=self.pop_size - 1)
         return self.pop[lhs], self.pop[rhs]
 
+# 3
     def Crossover(self, a, b):
         """Performs crossover on two selected individuals and returns the 
            children to be added to new_pop"""
