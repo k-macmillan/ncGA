@@ -2,7 +2,9 @@ import numpy as np
 import imageio
 import matplotlib.pyplot as plt
 from time import sleep, perf_counter
-# import cProfile
+from tqdm import tqdm
+#import cProfile
+
 
 class GA():
     ELITISM = 0.10
@@ -16,10 +18,10 @@ class GA():
         self.headless = headless
 
     def SetPopAttributes(self):
-        if self.epoch < 200:
-            self.pop_size = 200
-            self.gens = 200
-        else:
+        # if self.epoch < 200:
+        #     self.pop_size = 200
+        #     self.gens = 200
+        # else:
             self.pop_size = 10
             self.gens = 50
 
@@ -29,10 +31,11 @@ class GA():
 
     def Run(self, image):
         """Run the Genetic Algorthm"""
-        filename = image[7:len(image) - 4]
+        filename = 'results/' + image[7:len(image) - 4] + '_'
         self.LoadImage(image)
         self.Reset()
-        while self.epoch < self.circles:
+        checkpoints = [49, 99, 199, 499, 999, 1999, 2999, 3999]
+        for i in tqdm(range(self.circles)):
             self.SetPopAttributes()
             self.InitializePop()    # 1
             self.EvaluatePop()
@@ -45,41 +48,14 @@ class GA():
             self.UpdateImage()
 
             # For each epoch draw only if headless. Print on 50/100/200
+            
             if self.epoch == 0:
                 if self.headless:
                     self.Draw()
-            elif self.epoch == 49:
+            elif self.epoch in checkpoints:
                 if self.headless:
                     self.Draw()
-                plt.savefig('results/' + filename + '_0050.png')
-            elif self.epoch == 99:
-                if self.headless:
-                    self.Draw()
-                plt.savefig('results/' + filename + '_0100.png')
-            elif self.epoch == 199:
-                if self.headless:
-                    self.Draw()
-                plt.savefig('results/' + filename + '_0200.png')
-            elif self.epoch == 499:
-                if self.headless:
-                    self.Draw()
-                plt.savefig('results/' + filename + '_0500.png')
-            elif self.epoch == 999:
-                if self.headless:
-                    self.Draw()
-                plt.savefig('results/' + filename + '_1000.png')
-            elif self.epoch == 1999:
-                if self.headless:
-                    self.Draw()
-                plt.savefig('results/' + filename + '_2000.png')
-            elif self.epoch == 2999:
-                if self.headless:
-                    self.Draw()
-                plt.savefig('results/' + filename + '_3000.png')
-            elif self.epoch == 3999:
-                if self.headless:
-                    self.Draw()
-                plt.savefig('results/' + filename + '_4000.png')
+                plt.savefig(filename + str(self.epoch + 1).rjust(4, '0') + '.png')
             self.epoch += 1
 
         # When done display final image
@@ -119,9 +95,8 @@ class GA():
         self.rand_i = np.random.uniform(low=-255.0,
                                         high=255.0,
                                         size=self.pop_size)
-        for i in range(self.pop_size):
-            self.pop[i] = self.FillGenomes(i)
-        self.fitness = np.zeros(self.pop_size, dtype=np.float32)
+        
+        self.pop = [self.FillGenomes(i) for i in range(len(self.pop))]
 
     def FillGenomes(self, i):
         """Generates a genome"""
@@ -131,14 +106,11 @@ class GA():
 
     def EvaluatePop(self):
         """Evaluates each individual and sorts them"""
-        for i in range(self.pop_size):
-            self.fitness[i] = self.Fitness(self.pop[i])
-        # Sort
-        self.sorted_fitness = np.argsort(self.fitness)
+        self.fitness = np.array([self.Fitness(x) for x in self.pop])
+        self.sorted_fitness = np.argsort(np.array(self.fitness))
 
     def Fitness(self, individual):
         """Scores fitness for an individual"""
-
         # https://stackoverflow.com/a/44874588/5492446 + Austin
         cx, cy, r = individual['center']['x'], individual['center']['y'], individual['radius']
         Y, X = np.ogrid[-cy:self.height - cy, -cx:self.width - cx]
@@ -307,7 +279,7 @@ class GA():
             print('Drawing circle: ', self.epoch + 1)
         if self.epoch == 0:
             plt.clf()
-            fig, self.ax = plt.subplots(1, 2)
+            _, self.ax = plt.subplots(1, 2)
             plt.close(fig=1)
             self.ax[0].axis('off')
             self.ax[1].axis('off')
@@ -323,11 +295,11 @@ class GA():
         if not self.headless:
             plt.pause(.001)
 
-
-
 if __name__ == '__main__':
+    image = 'images/adam.png'
     ga = GA(headless=True)
-    # cProfile.run('ga.Run("images/test3.png")', sort="time")
-    ga.Run('images/adam.png')
+    #cProfile.run('ga.Run("images/adam.png")', sort="time")
+    ga.Run(image)
     plt.ioff()
 
+    
